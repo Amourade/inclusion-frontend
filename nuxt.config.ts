@@ -27,5 +27,11 @@ export default defineNuxtConfig({
       },
       allowedHosts: ['inclusion.localhost.com', 'inclusion.antoinetheriault.com']
     }
+  },
+  nitro: {
+    prerender: {
+      interval: 200,
+      concurrency: 1
+    }
   }
 })
