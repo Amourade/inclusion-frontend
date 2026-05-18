@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+$black: #1E1E1E;
+$very-light-pink: #FFB3FD4D;
+$light-pink: #FFB3FDB2;
+$pink: #FFB3FD;
+$very-light-orange: #E1AE774D;
+$light-orange: #E1AE77B2;
+$orange: #E1AE77;
+$brown: #663E3D;
+$light-grey: #F5F5F5;
+$dark-grey: #D9D9D9;
+$light-black: #1A202C;
+$blue: #CEE4F4;
+$green: #EBFDE966;
+$white: #FFFFFF;
+$neon-pink: #F25D7A;
+$yellow: #E1AE77;
+
+$small-breakpoint: 768px;
+$medium-breakpoint: 1024px;
+$large-breakpoint: 1360px;
+
+$content-block-padding-small: 35px 25px;
+$content-block-padding-medium: 57px 38px;
+$content-block-padding-large: 70px 50px;
+
+$cards-radius: 20px;
+$cards-padding: 2.1rem;
+
+.small-title{
+    font-size: 1.1rem;
+    line-height: 120%;
+    font-weight: 500;
+}

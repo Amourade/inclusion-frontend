@@ -1,0 +1,25 @@
+{
+  "name": "inclusion_frontend",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "cross-env NODE_OPTIONS=\"--use-openssl-ca\" NODE_EXTRA_CA_CERTS=\"%USERPROFILE%\\AppData\\Local\\mkcert\\rootCA.pem\" nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@directus/sdk": "^21.3.0",
+    "@vueuse/core": "^14.3.0",
+    "nuxt": "^4.4.4",
+    "nuxt-directus": "^5.7.0",
+    "vue": "^3.5.33",
+    "vue-router": "^5.0.6"
+  },
+  "devDependencies": {
+    "cross-env": "^10.1.0",
+    "sass": "^1.99.0",
+    "sass-loader": "^16.0.7"
+  }
+}
