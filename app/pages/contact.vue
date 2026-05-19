@@ -32,6 +32,7 @@ const {
 </script>
 <template>
   <GlobalSection id="contact" :small-title="contact?.titre" :big-title="contact?.sous_titre">
+    <SvgAccueilHero id="contact-svg" :color="colors.yellow" />
     <div id="contact-content">
       <div id="bureaux">
         <h4 class="small-body-text">{{ contact?.nos_bureaux_titre }}</h4>
@@ -57,6 +58,24 @@ const {
   </GlobalSection>
 </template>
 <style lang="scss" scoped>
+#contact-svg {
+  position: absolute;
+  top: 4rem;
+  left: 60%;
+  width: min(30%, 234px);
+  height: auto;
+
+  @media screen and (max-width: $medium-breakpoint) {
+    left: 60%;
+    top: 3rem;
+    width: min(30%, 200px);
+  }
+  
+  @media screen and (max-width: $small-breakpoint) {
+    display: none;
+  }
+}
+
 #contact {
   background-color: $white;
   color: $brown;
