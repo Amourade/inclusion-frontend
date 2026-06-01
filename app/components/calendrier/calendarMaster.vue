@@ -213,6 +213,10 @@ watch([displayMonth, displayYear], () => {
   evenementsRefresh();
 })
 
+onMounted(() => {
+  evenementsRefresh();
+})
+
 onUnmounted(() => {
   clearTimeout(highLightTimeout)
 })
