@@ -73,12 +73,12 @@ const endTimeArray = props.event.heure_fin ? props.event.heure_fin.split(':') : 
 </template>
 <style lang="scss" scoped>
 .event {
-    background-color: $orange;
-    color: $light-black;
+    background-color: $orange!important;
+    color: $light-black!important;
 
-    border-bottom-right-radius: 50px;
+    border-bottom-right-radius: 50px!important;
 
-    gap: .5rem;
+    gap: .5rem!important;
 
     h3{
         font-weight: 500;

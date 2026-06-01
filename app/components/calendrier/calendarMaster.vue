@@ -10,8 +10,9 @@ const props = defineProps<{
 
 const colors = useColors();
 const { locale } = useI18n();
-const nowMonth = useDateFormat(useNow(), 'M', { locales: locale.value === 'fr' ? 'fr-CA' : 'en-CA' });
-const nowYear = useDateFormat(useNow(), 'YYYY', { locales: locale.value === 'fr' ? 'fr-CA' : 'en-CA' });
+const d = new Date(new Date().toLocaleString("en-US", {timeZone: "America/Toronto"})); // timezone ex: Asia/Jerusalem
+const nowMonth = useDateFormat(d, 'M',);
+const nowYear = useDateFormat(d, 'YYYY',);
 const breakPointsValues = useBreakpointsValues()
 const breakpoints = useBreakpoints(breakPointsValues.value);
 const activeBreakpoint = breakpoints.active();
