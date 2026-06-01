@@ -1,9 +1,13 @@
 <script setup lang="ts">
+defineProps<{
+    link: string,
+    color?: string
+}>()
 </script>
 <template>
-    <NuxtLink class="main-link">
+    <GlobalMenuLink :color="color" :link="link" class="main-link">
         <slot />
-    </NuxtLink>
+    </GlobalMenuLink>
 </template>
 <style lang="scss" scoped>
 .main-link{

@@ -1,11 +1,43 @@
 <script setup lang="ts">
 import { useBreakpoints } from '@vueuse/core';
 
+const { getSingletonItem, getItems } = useDirectusItems();
+const { locale } = useI18n();
 const colors = useColors();
 const breakPointsValues = useBreakpointsValues()
 const breakpoints = useBreakpoints(breakPointsValues.value);
 
 const activeBreakpoint = breakpoints.active();
+
+const {
+    data: footerData,
+    pending: footerPending,
+    error: footerError,
+    refresh: footerRefresh,
+} = await useAsyncData("footer", () =>
+    getSingletonItem<Footer>({
+        collection: "footer",
+        params: {
+            fields: ["*", "translations.*"]
+        }
+    })
+);
+const footer = useTranslatedItem(footerData, locale);
+
+const {
+  data: footerGroupeLienData,
+  pending: footerGroupeLienPending,
+  error: footerGroupeLienError,
+  refresh: footerGroupeLienRefresh,
+} = await useAsyncData("footer_groupe_liens", () =>
+  getItems<FooterGroupeDeLiens>({
+    collection: "footer_groupe_de_liens",
+    params: {
+      fields: ["*", "translations.*"]
+    }
+  })
+);
+const footerGroupeLiens = useTranslatedItems(footerGroupeLienData, locale);
 </script>
 <template>
     <footer>
@@ -14,117 +46,43 @@ const activeBreakpoint = breakpoints.active();
                 <div class="left">
                     <SvgMainLogo :color="'#F25D7A'" />
                     <SvgFooter v-if="activeBreakpoint !== 'small'" id="svg-footer" :color="'#F5F5F5'" />
-                    <div v-if="activeBreakpoint !== 'small'" class="infos">
-                        <p>5350, rue Lafond</p>
-                        <p>Montréal, Québec – H1X 2X2</p>
-                        <p>Téléphone: <a href="tel:5142551054">514-255-1054</a></p>
-                    </div>
+                    <GlobalVHtml v-if="activeBreakpoint !== 'small'" class="infos" :html="footer?.adresse" />
                 </div>
                 <div class="right">
                     <nav class="footer-menu">
-                        <div>
-                            <h2>Découvrez</h2>
+                        <div v-for="groupe in footerGroupeLiens" :key="groupe.id">
+                            <h2>{{ groupe.titre }}</h2>
                             <ul>
-                                <li>
-                                    <NuxtLink href="#">Qui sommes-nous</NuxtLink>
-                                </li>
-                                <li>
-                                    <NuxtLink href="#">Approche</NuxtLink>
-                                </li>
-                                <li>
-                                    <NuxtLink href="#">Nos partenaires</NuxtLink>
-                                </li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h2>Partagez</h2>
-                            <ul>
-                                <li>
-                                    <NuxtLink href="#">Libre Espace</NuxtLink>
-                                </li>
-                                <li>
-                                    <NuxtLink href="#">Épicerie Solidaire</NuxtLink>
-                                </li>
-                                <li>
-                                    <NuxtLink href="#">La Pélicantine</NuxtLink>
-                                </li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h2>activités</h2>
-                            <ul>
-                                <li>
-                                    <NuxtLink href="#">Activités du mois</NuxtLink>
-                                </li>
-                                <li>
-                                    <NuxtLink href="#">Création</NuxtLink>
-                                </li>
-                                <li>
-                                    <NuxtLink href="#">Socio-culturel</NuxtLink>
-                                </li>
-                                <li>
-                                    <NuxtLink href="#">Discussions</NuxtLink>
-                                </li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h2>agissez</h2>
-                            <ul>
-                                <li>
-                                    <NuxtLink href="#">Implication</NuxtLink>
-                                </li>
-                                <li>
-                                    <NuxtLink href="#">Discussion</NuxtLink>
-                                </li>
-                                <li>
-                                    <NuxtLink href="#">Sensibilisation</NuxtLink>
-                                </li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h2>Connectez-vous</h2>
-                            <ul>
-                                <li>
-                                    <NuxtLink href="#">LinkedIn</NuxtLink>
-                                </li>
-                                <li>
-                                    <NuxtLink href="#">Facebook</NuxtLink>
-                                </li>
-                                <li>
-                                    <NuxtLink href="#">Youtube</NuxtLink>
-                                </li>
-                                <li>
-                                    <NuxtLink href="#">Instagram</NuxtLink>
+                                <li v-for="(lien, index) in groupe.liens" :key="index">
+                                    <FooterLink :link="lien.lien" :color="colors['white']">
+                                        {{ lien.libelle }}
+                                    </FooterLink>
                                 </li>
                             </ul>
                         </div>
                     </nav>
                     <div class="newsletter">
-                        <h2>Envie de participer?</h2>
+                        <h2>{{ footer?.infolettre_titre }}</h2>
                         <form>
-                            <label for="newsletter-email">Abonnez-vous à notre infolettre et ne manquez pas nos activités.</label>
+                            <label for="newsletter-email">{{ footer?.infolettre_texte }}</label>
                             <div>
-                                <input id="newsletter-email" type="email" placeholder="Votre courriel..." required />
-                                <button class="round-content-button" type="submit"><span>Envoyer</span> <SvgShortDiagArrow :color="colors.brown" /></button>
+                                <input id="newsletter-email" type="email" :placeholder="footer?.infolettre_courriel_placeholder" required />
+                                <button class="round-content-button" type="submit"><span>{{ footer?.infolettre_envoyer }}</span> <SvgShortDiagArrow :color="colors.brown" /></button>
                             </div>
                         </form>
                     </div>
                 </div>
             </section>
             <section v-if="activeBreakpoint === 'small'">
-                <div class="infos">
-                    <p>5350, rue Lafond</p>
-                    <p>Montréal, Québec – H1X 2X2</p>
-                    <p>Téléphone: <a href="tel:5142551054">514-255-1054</a></p>
-                </div>
+                <GlobalVHtml class="infos" :html="footer?.adresse" />
             </section>
             <section class="bottom">
-                <p>©2026 Projet inclusion. Tous droits réservés</p>
+                <p>{{ footer?.copyright }}</p>
                 <p>
-                    <NuxtLink href="#" @click.prevent="">Politique de confidentialité</NuxtLink>
+                    <FooterLink :link="footer?.politique_confidentialite_lien" @click.prevent="">{{ footer?.politique_confidentialie_libelle }}</FooterLink>
                 </p>
                 <p>
-                    <NuxtLink href="#" @click.prevent="">Conditions générales</NuxtLink>
+                    <FooterLink :link="footer?.politique_confidentialite_lien" @click.prevent="">{{ footer?.conditions_generales_libelle }}</FooterLink>
                 </p>
             </section>
         </div>

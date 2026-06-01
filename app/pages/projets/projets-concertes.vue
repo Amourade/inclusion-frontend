@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import slugify from 'slugify';
 const { getSingletonItem, getItems } = useDirectusItems();
 
 definePageMeta({
@@ -7,44 +8,53 @@ definePageMeta({
 });
 
 const colors = useColors();
+const { locale } = useI18n();
 
 const {
-  data: projetsConcerte,
-  pending,
-  error,
-  refresh,
+  data: projetsConcerteData,
+  pending: projetsConcertePending,
+  error: projetsConcerteError,
+  refresh: projetsConcerteRefresh,
 } = await useAsyncData("projets_concertes", () =>
   getSingletonItem<ProjetsConcertes>({
     collection: "projets_concertes",
+    params: {
+        fields: ["*", "translations.*"]
+    }
   })
 );
+const projetsConcerte = useTranslatedItem(projetsConcerteData, locale);
 
 const {
-  data: projetsListe,
+  data: projetsListeData,
   pending: projetsListePending,
   error: projetsListeError,
   refresh: projetsListeRefresh,
 } = await useAsyncData("projets_liste", () =>
   getItems<Projet>({
     collection: "projets",
+    params: {
+        fields: ["*", "translations.*"]
+    }
   })
 );
+const projetsListe = useTranslatedItems(projetsListeData, locale);
 </script>
 <template>
   <GlobalSection id="projets-concertes" :small-title="projetsConcerte?.titre">
     <h3 class="big-title smaller-centered-content">{{ projetsConcerte?.sous_titre }}</h3>
-    <div id="projets-concertes-texte" class="smaller-centered-content large-body-text"
-      v-html="projetsConcerte?.texte_intro" />
+    <GlobalVHtml id="projets-concertes-texte" class="smaller-centered-content large-body-text"
+      :html="projetsConcerte?.texte_intro" />
   </GlobalSection>
   <GlobalSection id="projets-exemples">
-    <div id="projets-exemples-texte" class="smaller-centered-content large-body-text"
-      v-html="projetsConcerte?.texte_projets" />
+    <GlobalVHtml id="projets-exemples-texte"
+      class="smaller-centered-content large-body-text" :html="projetsConcerte?.texte_projets" />
     <div id="projets-liste">
       <template v-for="projet in projetsListe" :key="projet.id">
-        <GlobalCard class="smaller-centered-content projet" :class="{ light: projet.boite_orange_pale }">
+        <GlobalCard :id="slugify(projet.titre)" class="smaller-centered-content projet" :class="{ light: projet.boite_orange_pale }">
           <h3 class="large-body-text">{{ projet.titre }}</h3>
-          <div class="projet-texte html-texte medium-body-text" v-html="projet.texte" />
-          <GlobalLien v-if="projet.lien" :href="projet.lien" target="_blank" :color="colors['light-black']">
+          <GlobalVHtml class="projet-texte html-texte medium-body-text" :html="projet.texte" />
+          <GlobalLien v-if="projet.lien" :lien="projet.lien" :color="colors['light-black']">
             <template #icon>
               <SvgSvrArrowUp :color="colors['light-grey']" />
             </template>

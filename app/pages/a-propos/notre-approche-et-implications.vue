@@ -7,50 +7,67 @@ definePageMeta({
 });
 
 const colors = useColors();
+const { locale } = useI18n();
 
 const {
-  data: approcheEtImplications,
+  data: approcheEtImplicationsData,
   pending: approcheEtImplicationsPending,
   error: approcheEtImplicationsError,
   refresh: approcheEtImplicationsRefresh,
 } = await useAsyncData("approche_et_implications", () =>
   getSingletonItem<NotreApprocheEtImplications>({
     collection: "notre_approche_et_implications",
+    params: {
+      fields: ["*", "translations.*"]
+    }
   })
 );
+const approcheEtImplications = useTranslatedItem(approcheEtImplicationsData, locale);
 
 const {
-  data: buts,
+  data: butsData,
   pending: butsPending,
   error: butsError,
   refresh: butsRefresh,
 } = await useAsyncData("buts", () =>
   getItems<ApprocheEtImplicationsButs>({
     collection: "approche_et_implications_buts",
+    params: {
+      fields: ["*", "translations.*"]
+    }
   })
 );
+const buts = useTranslatedItems(butsData, locale);
 
 const {
-  data: niveauxDaction,
+  data: niveauxDactionData,
   pending: niveauxDactionPending,
   error: niveauxDactionError,
   refresh: niveauxDactionRefresh,
 } = await useAsyncData("niveaux_daction", () =>
   getItems<NiveauxDactions>({
     collection: "niveaux_dactions",
+    params: {
+      fields: ["*", "translations.*"]
+    }
   })
 );
+const niveauxDaction = useTranslatedItems(niveauxDactionData, locale);
 
 const {
-  data: implicationsListe,
+  data: implicationsListeData,
   pending: implicationsListePending,
   error: implicationsListeError,
   refresh: implicationsListeRefresh,
 } = await useAsyncData("implications_liste", () =>
   getItems<ImplicationsListe>({
     collection: "implications_liste",
+    params: {
+      fields: ["*", "translations.*"]
+    }
   })
 );
+const implicationsListe = useTranslatedItems(implicationsListeData, locale);
 
 const spanifiedStaggerdApprocheEtImplicationsTitle = computed(() => {
   if (!approcheEtImplications.value?.approche_et_implications_sous_titre) return '';
@@ -61,7 +78,7 @@ const spanifiedStaggerdApprocheEtImplicationsTitle = computed(() => {
 <template>
   <GlobalSection id="approche-et-implications" :small-title="approcheEtImplications?.approche_et_implications_titre">
     <h3 class="big-title staggered-title" v-html="spanifiedStaggerdApprocheEtImplicationsTitle" />
-    <div id="approche-et-implications-texte" v-html="approcheEtImplications?.approche_et_implications_texte" />
+    <GlobalVHtml id="approche-et-implications-texte" :html="approcheEtImplications?.approche_et_implications_texte" />
     <div id="approche-et-implications-buts">
       <div v-for="but in buts">
         <p>{{ but.texte }}</p>
@@ -72,15 +89,15 @@ const spanifiedStaggerdApprocheEtImplicationsTitle = computed(() => {
     <div id="niveaux-dactions-liste">
       <div class="niveau" v-for="niveau in niveauxDaction">
         <h3>{{ niveau.titre }}</h3>
-        <div v-html="niveau.texte" />
+        <GlobalVHtml :html="niveau.texte" />
       </div>
     </div>
   </GlobalSection>
   <GlobalSection id="nos-implications" :big-title="approcheEtImplications?.implications_titre">
-    <div id="nos-implications-texte" v-html="approcheEtImplications?.implications_texte" />
+    <GlobalVHtml id="nos-implications-texte" :html="approcheEtImplications?.implications_texte" />
     <div id="nos-implications-liste">
       <div class="implication" v-for="implication in implicationsListe">
-        <div v-html="implication.texte" />
+        <GlobalVHtml :html="implication.texte" />
       </div>
     </div>
   </GlobalSection>

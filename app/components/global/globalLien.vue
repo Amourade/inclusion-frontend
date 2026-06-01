@@ -1,5 +1,9 @@
 <script setup lang="ts">
-defineProps({
+const props = defineProps({
+    lien: {
+        type: String,
+        required: true
+    },
     color: {
         type: String,
         required: false
@@ -7,17 +11,19 @@ defineProps({
 })
 
 const colors = useColors();
+
+const parsedLink = useParseLink(props.lien)
 </script>
 <template>
-    <NuxtLink>
-        <span class="icon" :style="{backgroundColor: color ? color : colors.brown}">
+    <NuxtLink :to="parsedLink">
+        <span class="icon" :style="{ backgroundColor: color ? color : colors.brown }">
             <slot name="icon" />
         </span>
-        <slot name="text"/>
+        <slot name="text" />
     </NuxtLink>
 </template>
 <style lang="scss" scoped>
-a{
+a {
     font-size: .875rem;
 
     display: inline-flex;
@@ -34,7 +40,7 @@ a{
     }
 }
 
-.icon{
+.icon {
     display: inline-flex;
     background: $brown;
     align-items: center;
@@ -43,7 +49,7 @@ a{
     width: 2rem;
     height: 2rem;
 
-    :deep(svg){
+    :deep(svg) {
         width: .75rem;
         height: .75rem;
 

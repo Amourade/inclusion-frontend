@@ -1,109 +1,85 @@
 <script lang="ts" setup>
 import { onClickOutside, useBreakpoints } from '@vueuse/core';
 
+const { locale, setLocale } = useI18n();
+const { getSingletonItem, getItems } = useDirectusItems();
 const colors = useColors();
 const breakPointsValues = useBreakpointsValues()
 const breakpoints = useBreakpoints(breakPointsValues.value);
-const menuItems: MainMenuLink[] = [
-    {
-        label: 'À propos',
-        link: '#',
-        submenu: [
-            {
-                label: 'Qui nous sommes',
-                link: 'QuiNousSommes'
-            },
-            {
-                label: 'Notre approche et implications',
-                link: 'NotreApprocheEtImplications'
-            }
-        ]
-    },
-    {
-        label: 'Projets',
-        link: '#',
-        submenu: [
-            {
-                label: 'Concertés',
-                link: 'ProjetsConcertes'
-            },
-            {
-                label: 'Nos espaces',
-                link: 'NosEspaces'
-            }
-        ]
-    },
-    {
-        label: 'S\'impliquer',
-        link: 'Simpliquer'
-    },
-    {
-        label: 'Actualités',
-        link: 'index',
-        submenu: [
-            {
-                label: 'On met quoi?',
-                link: 'index'
-            },
-            {
-                label: 'Dans ce menu?',
-                link: 'index'
-            }
-        ]
-    },
-    {
-        label: 'Soutien aux organisations',
-        link: 'SoutienAuxOrganisations'
-    },
-    {
-        label: 'Contact',
-        link: 'Contact'
-    },
-    /* {
-        label: 'Activités',
-        link: 'index'
-    }, */
-]
 const activeBreakpoint = breakpoints.active();
 const menuRef = useTemplateRef('menuRef');
 const showMenu = ref(false);
 
 const toggleMenu = () => {
-    console.log('menu button clicked', showMenu.value);
     showMenu.value = !showMenu.value;
 }
 
 onClickOutside(menuRef, () => {
-    console.log('Clicked outsie');
-    if(activeBreakpoint.value == 'small')
+    if (activeBreakpoint.value == 'small')
         showMenu.value = false
 })
+
+const {
+    data: lienMenuDataRaw,
+    pending: lienMenuDataPending,
+    error: lienMenuDataError,
+    refresh: lienMenuDataRefresh,
+} = await useAsyncData("menu_items", () =>
+    getItems<MenuItem>({
+        collection: "lien_menu",
+        params: {
+            fields: ["*", "translations.*"]
+        }
+    })
+);
+const lienMenuData = useTranslatedItems(lienMenuDataRaw, locale);
+
+const {
+    data: lienMenuDessusDataRaw,
+    pending: lienMenuDessusPending,
+    error: lienMenuDessusError,
+    refresh: lienMenuDessusRefresh,
+} = await useAsyncData("menu_items_top", () =>
+    getItems<MenuItem>({
+        collection: "lien_menu_haut",
+        params: {
+            fields: ["*", "translations.*"]
+        }
+    })
+);
+const lienMenuDessusData = useTranslatedItems(lienMenuDessusDataRaw, locale);
 </script>
 <template>
     <header id="header">
         <div id="logo">
-            <h1><NuxtLink :to="{name: 'index'}"><SvgMainLogo /></NuxtLink></h1>
+            <h1>
+                <NuxtLink :to="{ name: 'index' }">
+                    <SvgMainLogo />
+                </NuxtLink>
+            </h1>
         </div>
         <nav id="menu" ref="menuRef">
-            <button id="menu-button" :class="{'open': showMenu}" v-if="activeBreakpoint == 'small'" @click.prevent="toggleMenu">
+            <button id="menu-button" :class="{ 'open': showMenu }" v-if="activeBreakpoint == 'small'"
+                @click.prevent="toggleMenu">
                 <span>Menu</span>
                 <SvgDownArrow class="menu-arrow" :color="colors['orange']" />
             </button>
             <div id="inner-menu" v-show="activeBreakpoint == 'small' && showMenu || activeBreakpoint != 'small'">
                 <ul>
-                    <HeaderMainMenuLink v-for="item in menuItems" :key="item.label" :link="item" @closeMenu="showMenu = false" />
-                </ul>
-                <ul class="other-buttons">
-                    <li>
-                        <GlobalMainMenuLink class="agenda-link" to="#" @click="showMenu = false">
-                            <span>Calendrier d'activités</span>
-                        </GlobalMainMenuLink>
+                    <HeaderMainMenuLink v-for="item in lienMenuData" :key="item.id" :link="item"
+                        @closeMenu="showMenu = false" />
+                    <li v-if="locale !== 'en'">
+                        <GlobalMainMenuLink link="#" @click.prevent="setLocale('en'); showMenu = false"><span>en</span></GlobalMainMenuLink>
                     </li>
-                    <li>
-                        <GlobalMainMenuLink class="donate-link" to="#" @click="showMenu = false">
-                            <span>Faire un don</span>
-                     
-                            <SvgDownArrow class="menu-arrow" :color="colors.orange"/>
+                    <li v-if="locale !== 'fr'">
+                        <GlobalMainMenuLink link="#" @click.prevent="setLocale('fr'); showMenu = false"><span>fr</span></GlobalMainMenuLink>
+                    </li>
+                </ul>
+                <ul class="other-buttons" v-if="lienMenuDessusData && lienMenuDessusData.length > 0">
+                    <li v-for="item in lienMenuDessusData" :key="item.id">
+                        <GlobalMainMenuLink :color="colors.orange" :link="item.lien" class="agenda-link"
+                            @click="showMenu = false">
+                            <span>{{ item.libelle }}</span>
                         </GlobalMainMenuLink>
                     </li>
                 </ul>
@@ -112,7 +88,7 @@ onClickOutside(menuRef, () => {
     </header>
 </template>
 <style lang="scss" scoped>
-header{
+header {
     //background-color: $white;
     width: 100%;
 
@@ -140,7 +116,7 @@ header{
     }
 }
 
-#menu-button{
+#menu-button {
     background: $brown;
     color: $orange;
     border: none;
@@ -164,25 +140,25 @@ header{
 
     cursor: pointer;
 
-    svg{
+    svg {
         width: .75rem;
         height: .75rem;
         flex-shrink: 0;
         //rotate: 225deg;
     }
 
-    &.open{
-        svg{
+    &.open {
+        svg {
             rotate: 180deg;
         }
     }
 }
 
-#logo{
+#logo {
     flex-shrink: 0;
 }
 
-#menu{
+#menu {
     //margin: 0 auto;
     position: relative;
 
@@ -194,7 +170,7 @@ header{
     }
 }
 
-#inner-menu{
+#inner-menu {
     display: flex;
     flex-direction: column-reverse;
     gap: .75rem;
@@ -219,7 +195,7 @@ header{
         padding: 1rem;
         border-radius: 20px;
 
-        li{
+        li {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
@@ -228,21 +204,21 @@ header{
     }
 }
 
-#menu ul{
+#menu ul {
     display: flex;
     flex-direction: row;
-    gap: .25rem;
+    gap: .1rem;
     flex-wrap: wrap;
     justify-content: flex-end;
 
     margin: 0 auto;
 
-    li{
+    li {
         flex-shrink: 0;
         width: max-content;
     }
 
-    &.other-buttons{
+    &.other-buttons {
         display: flex;
         flex-direction: row;
         gap: 1rem;
@@ -250,15 +226,15 @@ header{
         justify-content: flex-end;
         margin: 0;
 
-        li{
-            a{
+        li {
+            a {
                 background-color: $brown;
                 color: $orange;
                 padding-left: 1rem;
                 padding-right: 1rem;
             }
-            
-            svg{
+
+            svg {
                 width: .75rem;
                 height: .75rem;
                 flex-shrink: 0;
@@ -284,7 +260,7 @@ header{
 
         align-items: flex-end;
 
-        li{
+        li {
             display: flex;
             flex-direction: column;
             align-items: flex-end;

@@ -7,28 +7,37 @@ definePageMeta({
 });
 
 const colors = useColors();
+const { locale } = useI18n();
 
 const {
-  data: simpliquer,
+  data: simpliquerData,
   pending: simpliquerPending,
   error: simpliquerError,
   refresh: simpliquerRefresh,
 } = await useAsyncData("simpliquer", () =>
   getSingletonItem<Simpliquer>({
     collection: "simpliquer",
+    params: {
+        fields: ["*", "translations.*"]
+    }
   })
 );
+const simpliquer = useTranslatedItem(simpliquerData, locale);
 
 const {
-  data: faconDeSimpliquerListe,
+  data: faconDeSimpliquerListeData,
   pending: faconDeSimpliquerListePending,
   error: faconDeSimpliquerListeError,
   refresh: faconDeSimpliquerListeRefresh,
 } = await useAsyncData("facons-de-simpliquer", () =>
-  getSingletonItem<FaconDeSimpliquer>({
+  getItems<FaconDeSimpliquer>({
     collection: "facon_de_simpliquer",
+    params: {
+        fields: ["*", "translations.*"]
+    }
   })
 );
+const faconDeSimpliquerListe = useTranslatedItems(faconDeSimpliquerListeData, locale);
 
 
 const spanifiedStaggerdSimpliquerTitle = computed(() => {
@@ -40,14 +49,14 @@ const spanifiedStaggerdSimpliquerTitle = computed(() => {
 <template>
   <GlobalSection id="simpliquer" :small-title="simpliquer?.titre">
     <h3 class="big-title staggered-title" v-html="spanifiedStaggerdSimpliquerTitle" />
-    <div id="simpliquer-texte" class="large-body-text" v-html="simpliquer?.texte" />
+    <GlobalVHtml id="simpliquer-texte" class="large-body-text" :html="simpliquer?.texte" />
     <div id="facon-de-simpliquer-liste">
       <h3 class="big-title">{{ simpliquer?.facons_de_simpliquer_titre }}</h3>
       <div class="liste">
         <GlobalCard class="facon" v-for="facon in faconDeSimpliquerListe">
-          <h4>{{ facon.titre }}</h4>
-          <div class="small-body-text" v-html="facon.texte"></div>
-          <GlobalLien v-if="facon.lien" :href="facon.lien" target="_blank" :color="colors['brown']">
+          <h4>{{ facon?.titre }}</h4>
+          <GlobalVHtml class="small-body-text" :html="facon?.texte"></GlobalVHtml>
+          <GlobalLien v-if="facon.lien" :lien="facon.lien" :color="colors['brown']">
             <template #icon>
               <SvgSvrArrowUp :color="colors['light-grey']" />
             </template>
@@ -98,7 +107,6 @@ const spanifiedStaggerdSimpliquerTitle = computed(() => {
   #simpliquer-texte {
     max-width: 826px;
     margin: 0 auto;
-
     margin-bottom: 6rem;
   }
 

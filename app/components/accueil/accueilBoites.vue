@@ -1,22 +1,28 @@
 <script setup lang="ts">
 const { getItems } = useDirectusItems();
 
+const { locale } = useI18n();
+
 const {
-  data: AccueilBoite,
-  pending,
-  error,
-  refresh,
+  data: AccueilBoiteData,
+  pending: AccueilBoiteRawPending,
+  error: AccueilBoiteRawError,
+  refresh: AccueilBoiteRawRefresh,
 } = await useAsyncData("accueil_boites", () =>
   getItems<AccueilBoite>({
     collection: "accueil_boite",
+    params: {
+      fields: ["*", "translations.*"]
+    }
   })
 );
+const AccueilBoite = useTranslatedItems(AccueilBoiteData, locale);
 </script>
 <template>
   <GlobalSection>
     <div id="accueil-cards">
       <GlobalCard v-for="(boite, index) in AccueilBoite" :class="['card', 'card-' + index]" :small-title="boite.titre" :large-text="boite.texte">
-          <GlobalLien>
+          <GlobalLien v-if="boite.lien" :lien="boite.lien">
               <template #icon><SvgSvrArrowUp /></template>
               <template #text>{{ boite.titre_du_lien }}</template>
           </GlobalLien>

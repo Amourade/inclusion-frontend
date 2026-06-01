@@ -7,42 +7,51 @@ definePageMeta({
 });
 
 const colors = useColors();
+const { locale } = useI18n();
 
 const {
-  data: nosEspaces,
-  pending,
-  error,
-  refresh,
+  data: nosEspacesData,
+  pending: nosEspacesPending,
+  error: nosEspacesError,
+  refresh: nosEspacesRefresh,
 } = await useAsyncData("nos_espaces", () =>
   getSingletonItem<NosEspaces>({
     collection: "nos_espaces",
+    params: {
+        fields: ["*", "translations.*"]
+    }
   })
 );
+const nosEspaces = useTranslatedItem(nosEspacesData, locale);
 
 const {
-  data: espaceListe,
+  data: espaceListeData,
   pending: espaceListePending,
   error: espaceListeError,
   refresh: espaceListeRefresh,
 } = await useAsyncData("espaces_liste", () =>
   getItems<Espace>({
     collection: "espace",
+    params: {
+        fields: ["*", "translations.*"]
+    }
   })
 );
+const espaceListe = useTranslatedItems(espaceListeData, locale);
 
 </script>
 <template>
   <GlobalSection id="nos-espaces" :small-title="nosEspaces?.titre">
     <h3 class="big-title smaller-centered-content">{{ nosEspaces?.sous_titre }}</h3>
-    <div id="nos-espaces-texte" class="smaller-centered-content large-body-text" v-html="nosEspaces?.texte" />
+    <GlobalVHtml id="nos-espaces-texte" class="smaller-centered-content large-body-text" :html="nosEspaces?.texte" />
   </GlobalSection>
   <GlobalSection id="espaces-liste-section">
     <div id="espaces-liste">
       <template v-for="espace in espaceListe" :key="espace.id">
         <GlobalCard class="smaller-centered-content projet" :class="{ light: espace.boite_orange_pale }">
           <h3 class="large-body-text">{{ espace.titre }}</h3>
-          <div class="projet-texte html-texte medium-body-text" v-html="espace.texte" />
-          <GlobalLien v-if="espace.lien" :href="espace.lien" target="_blank" :color="colors['light-black']">
+          <GlobalVHtml class="projet-texte html-texte medium-body-text" :html="espace.texte" />
+          <GlobalLien v-if="espace.lien" :lien="espace.lien" :color="colors['light-black']">
             <template #icon>
               <SvgSvrArrowUp :color="colors['light-grey']" />
             </template>

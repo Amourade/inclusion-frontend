@@ -2,7 +2,7 @@
 import { onClickOutside, useBreakpoints, useMouseInElement, usePointer } from '@vueuse/core';
 
 const props = defineProps<{
-    link: MainMenuLink
+    link: MenuItem
 }>()
 const emits = defineEmits<{
     (e: 'closeMenu'): void
@@ -17,6 +17,7 @@ const activeBreakpoint = breakpoints.active();
 const showSubmenu = ref(false);
 
 onClickOutside(linkRef, () => closeSubmenuOnClickOutside())
+
 const triggerSubmenu = (type: 'hover' | 'click', state: boolean) => {
     if (type === 'hover' && pointerType.value === 'mouse') {
         if (activeBreakpoint.value !== 'small') showSubmenu.value = state
@@ -31,6 +32,13 @@ const closeSubmenuOnClickOutside = () => {
         showSubmenu.value = false
 }
 
+const activeLinks = ref(0);
+
+const setActiveState = (active: boolean) => {
+    if (active) activeLinks.value++
+    else activeLinks.value--
+}
+
 watch(activeBreakpoint, () => {
     showSubmenu.value = false
 })
@@ -38,28 +46,17 @@ watch(activeBreakpoint, () => {
 <template>
     <li class="main-menu-item" ref="linkRef" @pointerenter="triggerSubmenu('hover', true)"
         @pointerleave="triggerSubmenu('hover', false)" @click.prevent="triggerSubmenu('click', !showSubmenu)">
-        <template v-if="link.link && link.link !== '#'">
-            <GlobalMainMenuLink :to="{ name: link.link }" @click="() => {
-                if (!link.submenu) emits('closeMenu')
-            }" :class="{ open: showSubmenu }">
-                <span>{{ link.label }}</span>
-                <SvgDownArrow v-if="link.submenu" class="menu-arrow"
-                    :color="activeBreakpoint == 'small' ? colors.brown : colors.black" />
-            </GlobalMainMenuLink>
-        </template>
-        <template v-else>
-            <GlobalMainMenuLink href="#" @click="() => {
-                if (!link.submenu) emits('closeMenu')
-            }" :class="{ open: showSubmenu }">
-                <span>{{ link.label }}</span>
-                <SvgDownArrow v-if="link.submenu" class="menu-arrow"
-                    :color="activeBreakpoint == 'small' ? colors.brown : colors.black" />
-            </GlobalMainMenuLink>
-        </template>
-        <template v-if="link.submenu">
+        <GlobalMainMenuLink :link="link.lien" @click="() => {
+            if (!link.sous_menu) emits('closeMenu')
+        }" :class="{ open: showSubmenu, 'submenu': link.sous_menu, 'submenu-active': link.sous_menu && Math.abs(activeLinks) < link.sous_menu.length }">
+            <span>{{ link.libelle }}</span>
+            <SvgDownArrow v-if="link.sous_menu" class="menu-arrow"
+                :color="activeBreakpoint == 'small' ? colors.brown : colors.black" />
+        </GlobalMainMenuLink>
+        <template v-if="link.sous_menu">
             <ul class="sub-menu" v-show="showSubmenu">
-                <li v-for="subLink in link.submenu">
-                    <NuxtLink :to="{ name: subLink.link }" @click="emits('closeMenu')">{{ subLink.label }}</NuxtLink>
+                <li v-for="subLink in link.sous_menu" :key="subLink.id">
+                    <GlobalMenuLink @active="setActiveState" :link="subLink.lien" @click="emits('closeMenu')">{{ subLink.libelle }}</GlobalMenuLink>
                 </li>
             </ul>
         </template>
@@ -73,8 +70,16 @@ li {
     width: max-content;
 }
 
-.router-link-active {
+.router-link-active{
     border-color: black;
+
+    &.submenu{
+        border-color: transparent;
+        
+        &.submenu-active {
+            border-color: black;
+        }
+    }
 }
 
 .sub-menu {

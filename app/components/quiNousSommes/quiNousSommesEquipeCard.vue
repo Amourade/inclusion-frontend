@@ -21,13 +21,13 @@ const showBio = ref(false);
             </div>
         </div>
         <template v-if="membre.bio">
-            <GlobalLien class="lien-bio" @click.prevent="showBio = true">
+            <GlobalLien lien="#" class="lien-bio" @click.prevent="showBio = true">
                 <template #icon><SvgPlusSign class="plus-sign" /></template>
                 <template #text>{{ membre.a_propos_libelle ? membre.a_propos_libelle : 'En savoir plus' }}</template>
             </GlobalLien>
             <div v-if="showBio" class="bio">
-                <div class="text" v-html="membre.bio"></div>
-                <GlobalLien class="lien-bio" @click.prevent="showBio = false">
+                <GlobalVHtml class="text" :html="membre.bio"></GlobalVHtml>
+                <GlobalLien lien="#" class="lien-bio" @click.prevent="showBio = false">
                     <template #icon><SvgPlusSign class="plus-sign" /></template>
                 </GlobalLien>
             </div>

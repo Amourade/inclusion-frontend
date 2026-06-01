@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import CalendarMaster from '~/components/calendrier/calendarMaster.vue';
+
 const { getSingletonItem } = useDirectusItems();
 
 definePageMeta({
@@ -6,16 +8,22 @@ definePageMeta({
     title: 'Inclusion Montréal'
 });
 
+const { locale } = useI18n();
+
 const {
-    data: Accueil,
-    pending,
-    error,
-    refresh,
+    data: AccueilData,
+    pending: pendingAccueilRaw,
+    error: errorAccueilRaw,
+    refresh: refreshAccueilRaw,
 } = await useAsyncData("accueil", () =>
     getSingletonItem<Accueil>({
-        collection: "accueil",
-    })
+    collection: "accueil",
+    params: {
+      fields: ["*", "translations.*"]
+    }
+  })
 );
+const Accueil = useTranslatedItem(AccueilData, locale);
 </script>
 <template>
     <div>
@@ -24,11 +32,7 @@ const {
             <p>{{ Accueil?.intro_texte }}</p>
         </GlobalSection>
         <AccueilBoites />
-        <!-- <GlobalSection id="accueil-calendrier">
-            <h2>{{ Accueil?.calendrier_titre }}</h2>
-            <h3>{{ Accueil?.calendrier_sous_titre }}</h3>
-            <AccueilCalendrier />
-        </GlobalSection> -->
+        <CalendarMaster :compact-mode="true" />
         <GlobalSection id="accueil-contactez-nous" :small-title="Accueil?.contactez_nous_titre"
             :big-title="Accueil?.contactez_nous_sous_titre">
             <SvgAccueilContactSvg id="svg-accueil-contact" />
@@ -83,5 +87,21 @@ const {
 #accueil-contactez-nous {
     background: $light-grey;
     color: $brown;
+
+    :deep(.big-title) {
+        min-height: 10rem;
+    }
+
+    @media screen and (max-width: $medium-breakpoint) {
+        :deep(.big-title) {
+            min-height: 7.2rem;
+        }
+    }
+
+    @media screen and (max-width: $small-breakpoint) {
+        :deep(.big-title) {
+            min-height: auto;
+        }
+    }
 }
 </style>

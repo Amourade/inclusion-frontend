@@ -7,39 +7,52 @@ definePageMeta({
 });
 
 const colors = useColors();
+const { locale } = useI18n();
 
 const {
-    data: quiNousSommes,
-    pending,
-    error,
-    refresh,
+    data: quiNousSommesData,
+    pending: quiNousSommesPending,
+    error: quiNousSommesError,
+    refresh: quiNousSommesRefresh,
 } = await useAsyncData("qui_sommes_nous", () =>
     getSingletonItem<QuiNousSommes>({
         collection: "qui_nous_sommes",
+        params: {
+            fields: ["*", "translations.*"]
+        }
     })
 );
+const quiNousSommes = useTranslatedItem(quiNousSommesData, locale);
 
 const {
-    data: conseilMembres,
+    data: conseilMembresData,
     pending: conseilMembresPending,
     error: conseilMembresError,
     refresh: conseilMembresRefresh,
 } = await useAsyncData("conseil_membres", () =>
     getItems<ConseilMembre>({
         collection: "membre_conseil",
+        params: {
+            fields: ["*", "translations.*"]
+        }
     })
 );
+const conseilMembres = useTranslatedItems(conseilMembresData, locale);
 
 const {
-    data: equipeMembres,
+    data: equipeMembresData,
     pending: equipeMembresPending,
     error: equipeMembresError,
     refresh: equipeMembresRefresh,
 } = await useAsyncData("equipe_membres", () =>
     getItems<EquipeMembre>({
         collection: "equipe_membre",
+        params: {
+            fields: ["*", "translations.*"]
+        }
     })
 );
+const equipeMembres = useTranslatedItems(equipeMembresData, locale);
 
 const spanifiedStaggerdMissionTitle = computed(() => {
     if (!quiNousSommes.value?.notre_mission_sous_titre) return '';
@@ -68,7 +81,7 @@ const spanifiedStaggerdConseilTitle = computed(() => {
             <p>{{ quiNousSommes?.notre_mission_boite_3 }}</p>
         </div>
         <div class="centered-container">
-            <NuxtLink class="round-content-button" :to="{ name: '' }">
+            <NuxtLink class="round-content-button" :to="{ name: 'NotreApprocheEtImplications' }">
                 <span>{{ quiNousSommes?.notre_mission_lien_titre }}</span>
                 <SvgShortDiagArrow :color="colors.white" />
             </NuxtLink>

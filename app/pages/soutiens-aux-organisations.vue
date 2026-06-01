@@ -7,43 +7,52 @@ definePageMeta({
 });
 
 const colors = useColors();
+const { locale } = useI18n();
 
 const {
-  data: soutienAuxOrganisations,
+  data: soutienAuxOrganisationsData,
   pending: soutienAuxOrganisationsPending,
   error: soutienAuxOrganisationsError,
   refresh: soutienAuxOrganisationsRefresh,
 } = await useAsyncData("soutient-aux-organisations", () =>
   getSingletonItem<SoutienAuxOrganisations>({
     collection: "soutien_aux_organisations",
+    params: {
+        fields: ["*", "translations.*"]
+    }
   })
 );
+const soutienAuxOrganisations = useTranslatedItem(soutienAuxOrganisationsData, locale);
 
 const {
-  data: ideesThemesListe,
+  data: ideesThemesListeRaw,
   pending: ideesThemesListePending,
   error: ideesThemesListeError,
   refresh: ideesThemesListeRefresh,
 } = await useAsyncData("idees-themes-liste", () =>
   getItems<IdeesThemesListe>({
     collection: "idees_themes",
+    params: {
+        fields: ["*", "translations.*"]
+    }
   })
 );
+const ideesThemesListe = useTranslatedItems(ideesThemesListeRaw, locale);
 </script>
 <template>
   <GlobalSection id="soutien-aux-organisations" :small-title="soutienAuxOrganisations?.titre">
     <h3 class="big-title" v-html="soutienAuxOrganisations?.sous_titre" />
-    <div id="soutient-aux-organisations-intro-texte" class="large-body-text"
-      v-html="soutienAuxOrganisations?.texte_intro" />
-    <div id="soutient-aux-organisations-description-texte" class="small-body-text html-texte"
-      v-html="soutienAuxOrganisations?.texte_description" />
+    <GlobalVHtml id="soutient-aux-organisations-intro-texte" class="large-body-text"
+      :html="soutienAuxOrganisations?.texte_intro" />
+    <GlobalVHtml id="soutient-aux-organisations-description-texte" class="small-body-text html-texte"
+      :html="soutienAuxOrganisations?.texte_description" />
     <div id="idees-themes-liste">
       <div class="idee" v-for="idee in ideesThemesListe">
         <p class="medium-body-text">{{ idee?.texte }}</p>
       </div>
     </div>
-    <div id="soutient-aux-organisations-bas-texte" class="html-texte small-body-text"
-      v-html="soutienAuxOrganisations?.texte_bas" />
+    <GlobalVHtml id="soutient-aux-organisations-bas-texte" class="html-texte small-body-text"
+      :html="soutienAuxOrganisations?.texte_bas" />
   </GlobalSection>
 </template>
 <style lang="scss" scoped>

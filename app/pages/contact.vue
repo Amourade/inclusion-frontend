@@ -7,28 +7,37 @@ definePageMeta({
 });
 
 const colors = useColors();
+const { locale } = useI18n();
 
 const {
-  data: contact,
+  data: contactData,
   pending: contactPending,
   error: contactError,
   refresh: contactRefresh,
 } = await useAsyncData("contact", () =>
   getSingletonItem<Contact>({
     collection: "contact",
+    params: {
+        fields: ["*", "translations.*"]
+    }
   })
 );
+const contact = useTranslatedItem(contactData, locale);
 
 const {
-  data: lieuxPartenairesListe,
+  data: lieuxPartenairesListeData,
   pending: lieuxPartenairesListePending,
   error: lieuxPartenairesListeError,
   refresh: lieuxConcerteListeRefresh,
 } = await useAsyncData("lieux-partenaires-liste", () =>
   getItems<LieuxPartenairesListe>({
     collection: "lieux_partenaire",
+    params: {
+        fields: ["*", "translations.*"]
+    }
   })
 );
+const lieuxPartenairesListe = useTranslatedItems(lieuxPartenairesListeData, locale);
 </script>
 <template>
   <GlobalSection id="contact" :small-title="contact?.titre" :big-title="contact?.sous_titre">
@@ -36,9 +45,9 @@ const {
     <div id="contact-content">
       <div id="bureaux">
         <h4 class="small-body-text">{{ contact?.nos_bureaux_titre }}</h4>
-        <div class="medium-body-text html-texte" v-html="contact?.nos_bureaux_texte" />
+        <GlobalVHtml class="medium-body-text html-texte" :html="contact?.nos_bureaux_texte" />
       </div>
-      <div id="contact-text" class="texte medium-body-text html-texte" v-html="contact?.texte" />
+      <GlobalVHtml id="contact-text" class="texte medium-body-text html-texte" :html="contact?.texte" />
     </div>
   </GlobalSection>
   <GlobalSection id="lieux-partenaires" :small-title="contact?.lieux_partenaires_titre"
@@ -47,7 +56,7 @@ const {
       <div class="lieu-partenaire" v-for="lieu in lieuxPartenairesListe" :key="lieu.id">
         <h4 class="small-body-text">{{ lieu.titre }}</h4>
         <p class="large-body-text" v-html="lieu.texte" />
-        <GlobalLien v-if="lieu.lien" :href="lieu.lien" target="_blank" :color="colors['brown']">
+        <GlobalLien v-if="lieu.lien" :lien="lieu.lien" :color="colors['brown']">
           <template #icon>
             <SvgSvrArrowUp :color="colors['light-grey']" />
           </template>
