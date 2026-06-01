@@ -214,6 +214,7 @@ watch([displayMonth, displayYear], () => {
 })
 
 onMounted(() => {
+  console.log("refreshing for: ", displayMonth.value, displayYear.value)
   evenementsRefresh();
 })
 
