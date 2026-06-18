@@ -102,6 +102,15 @@ const endTimeArray = props.event.heure_fin ? props.event.heure_fin.split(':') : 
         justify-content: flex-start;
         cursor: pointer;
 
+        flex-shrink: 0;
+
+        width: calc(100%/3 - (1rem - 1rem/3));
+        margin-right: 1rem;
+
+        &:last-child{
+            margin-right: 0px;
+        }
+
         h3{
             font-size: 1.5rem;
         }

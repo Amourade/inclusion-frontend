@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useBreakpoints, useDateFormat, useNow, useMounted, useTemplateRefsList } from '@vueuse/core';
+import { useBreakpoints, useDateFormat, useNow, useMounted, useTemplateRefsList, useScroll } from '@vueuse/core';
 import CalendarEvent from '~/components/calendrier/calendarEvent.vue';
 import CalendarWidget from '~/components/calendrier/calendarWidget.vue';
 const { getSingletonItem, getItems } = useDirectusItems();
@@ -19,6 +19,10 @@ const activeBreakpoint = breakpoints.active();
 const mounted = useMounted();
 const fakeLoading = ref(false);
 let fakeLoadingTimeout: number;
+const eventsWrapper = useTemplateRef('eventsWrapperRef')
+const { x, y, isScrolling, arrivedState, directions, measure} = useScroll(eventsWrapper, {
+  behavior: 'smooth'
+})
 
 const query = useRoute().query
 const parsedQueryYear = parseInt(query.year as string)
@@ -135,7 +139,7 @@ function nextMonth() {
 }
 
 const toggleFilter = (categoryId: number) => {
-  if(fakeLoading.value) return;
+  if (fakeLoading.value) return;
 
   clearTimeout(fakeLoadingTimeout)
   fakeLoading.value = true;
@@ -150,8 +154,8 @@ const toggleFilter = (categoryId: number) => {
 }
 
 const toggleInscriptionFilter = () => {
-  if(fakeLoading.value) return;
-  
+  if (fakeLoading.value) return;
+
   clearTimeout(fakeLoadingTimeout)
   fakeLoading.value = true;
   fakeLoadingTimeout = setTimeout(() => {
@@ -161,8 +165,8 @@ const toggleInscriptionFilter = () => {
 }
 
 const removeFilters = () => {
-  if(fakeLoading.value) return;
-  
+  if (fakeLoading.value) return;
+
   clearTimeout(fakeLoadingTimeout)
   fakeLoading.value = true;
   fakeLoadingTimeout = setTimeout(() => {
@@ -233,6 +237,19 @@ const highlightEvents = (ids: number[]) => {
     highLightTimeout = setTimeout(() => {
       eventsRefs.value.forEach((e) => e.highlight(ids))
     }, 500)
+  }
+}
+
+const scrollEvents = (direction: 'left' | 'right') => {
+  
+  const clientWidth = eventsWrapper.value?.clientWidth;
+  
+  if(!clientWidth) return;
+
+  if(direction == 'right'){
+    x.value = x.value + clientWidth;
+  }else{
+    x.value = x.value - clientWidth;
   }
 }
 
@@ -322,15 +339,26 @@ onUnmounted(() => {
           </button>
         </div>
       </div>
-      <Transition name="events-wrapper-fade" appear>
+      <Transition name="events-wrapper-fade" appear @after-enter="measure()">
         <div class="events-wrapper" v-show="!fakeLoading && !evenementsPending"
-          :class="{ /* loading: fakeLoading || evenementsPending */ }">
-              <div tag="div" name="event-card-fade" id="calendar-events" v-if="fileteredEvenements.length"
-                :class="{ compact: compactMode }">
-                <CalendarEvent v-for="evenement in fileteredEvenements" ref="eventsRefs" :key="evenement.id"
-                  :event="evenement" :compact="compactMode" :categories="categories" @go-to-event="navigateToEvent" />
-              </div>
-              <p v-else class="no-events">{{ calendrier?.pas_devenements_message }}</p>
+          :class="{ compact: compactMode }">
+          <div class="events-nav" v-if="compactMode">
+            <button class="nav-btn previous" @click="scrollEvents('left')"
+              :aria-label="locale == 'fr' ? 'Défiler les évènements' : 'Scroll events'"
+              :title="locale == 'fr' ? 'Défiler les évènements' : 'Scroll events'" :class="{inactive: arrivedState.left}">
+              <SvgSideArrow :color="colors['light-black']" />
+            </button>
+            <button class="nav-btn next" @click="scrollEvents('right')" :aria-label="locale == 'fr' ? 'Défiler les évènements' : 'Scroll events'"
+              :title="locale == 'fr' ? 'Défiler les évènements' : 'Scroll events'" :class="{inactive: arrivedState.right}">
+              <SvgSideArrow :color="colors['light-black']" />
+            </button>
+          </div>
+          <div ref="eventsWrapperRef" name="event-card-fade" id="calendar-events" v-if="fileteredEvenements.length"
+            :class="{ compact: compactMode }">
+            <CalendarEvent v-for="evenement in fileteredEvenements" ref="eventsRefs" :key="evenement.id"
+              :event="evenement" :compact="compactMode" :categories="categories" @go-to-event="navigateToEvent" />
+          </div>
+          <p v-else class="no-events">{{ calendrier?.pas_devenements_message }}</p>
         </div>
       </Transition>
     </section>
@@ -351,7 +379,7 @@ onUnmounted(() => {
   }
 }
 
-.month-nav {
+.month-nav, .events-nav {
   display: flex;
   align-items: center;
   gap: .5rem;
@@ -376,6 +404,13 @@ onUnmounted(() => {
 
     flex-shrink: 0;
 
+    transition: opacity .5s ease-in-out;
+
+    &.inactive{
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
     svg {
       height: .975rem;
       width: auto;
@@ -393,6 +428,12 @@ onUnmounted(() => {
       }
     }
   }
+}
+
+.events-nav{
+  margin-bottom: 1rem;
+  width: 100%;
+  justify-content: space-between;
 }
 
 .calendar-header {
@@ -501,6 +542,36 @@ onUnmounted(() => {
       pointer-events: none;
     }
   }
+
+  .nav-btn{
+    &.inactive{
+      opacity: .4;
+      pointer-events: none;
+    }
+  }
+
+  /*  &.compact {
+    width: 100vw;
+
+    padding: $content-block-padding-large;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin: 0 auto;
+
+    position: relative;
+
+    @media screen and (max-width: $medium-breakpoint) {
+      padding: $content-block-padding-medium;
+      padding-top: 0px;
+      padding-bottom: 0px;
+    }
+
+    @media screen and (max-width: $small-breakpoint) {
+      padding: $content-block-padding-small;
+      padding-top: 0px;
+      padding-bottom: 0px;
+    }
+  } */
 }
 
 #calendar-events {
@@ -512,15 +583,31 @@ onUnmounted(() => {
   width: 100%;
 
   &.compact {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+
+    gap: 0rem;
+
+    overflow-y: auto;
+
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+
+    /* Firefox */
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    //grid-template-columns: repeat(3, 1fr);
 
     @media screen and (max-width: $medium-breakpoint) {
-      grid-template-columns: repeat(3, 1fr);
+      //grid-template-columns: repeat(3, 1fr);
     }
 
     @media screen and (max-width: $small-breakpoint) {
-      grid-template-columns: repeat(1, 1fr);
+      //grid-template-columns: repeat(1, 1fr);
     }
   }
 

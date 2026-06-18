@@ -319,6 +319,7 @@ li{
   opacity: 0;
   max-height: 0px;
   overflow: hidden;
+  overflow-y: hidden!important;
 }
 
 .events-wrapper-fade-enter-to,
@@ -326,6 +327,7 @@ li{
   opacity: 1;
   max-height: 100vh;
   overflow: hidden;
+  overflow-y: hidden!important;
 }
 
 /* .event-card-fade-leave-active {
