@@ -120,6 +120,14 @@ const endTimeArray = props.event.heure_fin ? props.event.heure_fin.split(':') : 
                 border-bottom-right-radius: $cards-radius!important;    
             }
         }
+
+        @media screen and (max-width: $medium-breakpoint) {
+            width: calc(100%/2 - (1rem - 1rem/2));
+        }
+
+        @media screen and (max-width: $small-breakpoint) {
+            width: calc(100%/1 - (1rem - 1rem/1));
+        }
     }
 }
 
