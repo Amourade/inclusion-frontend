@@ -30,3 +30,9 @@ export const useBreakpointsValues = () => {
         }
     })
 }
+
+export const useI18n = () => {
+    return useState('i18n', () => {
+        return 'fr'
+    })
+}

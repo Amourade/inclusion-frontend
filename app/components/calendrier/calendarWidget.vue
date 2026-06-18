@@ -9,7 +9,7 @@ interface Props {
 
 const colors = useColors();
 const props = defineProps<Props>()
-const { locale } = useI18n()
+const locale = useI18n()
 
 const emit = defineEmits<{
   'update:year': [year: number]
@@ -206,6 +206,14 @@ watch(() => props.month, (newMonth) => {
     &.previous {
       transform: rotate(180deg);
     }
+
+    @media screen and (hover: hover){
+      &:hover{
+        :deep(svg){
+          fill: $light-black;
+        }
+      }
+    }
   }
 }
 
@@ -239,7 +247,7 @@ watch(() => props.month, (newMonth) => {
   font-size: 0.9rem;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.5s ease-in-out;
 
   @media screen and (max-width: $medium-breakpoint) {
     padding: 0.3rem;
@@ -255,15 +263,16 @@ watch(() => props.month, (newMonth) => {
     color: $dark-grey;
   }
 
-  /* &.today {
-    background-color: $pink;
-    font-weight: 600;
-  } */
-
   &.has-events {
     background-color: $orange;
     color: $light-black;
     font-weight: 600;
+
+    @media screen and (hover: hover){
+      &:hover {
+        background-color: $light-orange;
+      }
+    }
   }
 }
 </style>

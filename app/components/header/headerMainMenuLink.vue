@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onClickOutside, useBreakpoints, useMouseInElement, usePointer } from '@vueuse/core';
+import { useIntervalFn } from '@vueuse/core'
 
 const props = defineProps<{
     link: MenuItem
@@ -15,6 +16,23 @@ const { pointerType } = usePointer();
 const breakpoints = useBreakpoints(breakPointsValues.value);
 const activeBreakpoint = breakpoints.active();
 const showSubmenu = ref(false);
+const submenuHasActiveLinks = ref(false)
+const submenuRef = useTemplateRef('submenuRef');
+const { pause, resume, isActive } = useIntervalFn(() => {
+    const children = submenuRef.value?.children
+
+    if(!children?.length) return;
+    let activeChildren = 0;
+
+    for(let i = 0; i < children.length; i++){
+        const link = children[i]?.getElementsByTagName('a')[0];
+        if(link?.classList.contains('router-link-exact-active')) activeChildren++;
+    }
+
+    activeChildren > 0 ? submenuHasActiveLinks.value = true : submenuHasActiveLinks.value = false;
+}, 250, {
+    immediate: false
+})
 
 onClickOutside(linkRef, () => closeSubmenuOnClickOutside())
 
@@ -32,15 +50,14 @@ const closeSubmenuOnClickOutside = () => {
         showSubmenu.value = false
 }
 
-const activeLinks = ref(0);
-
-const setActiveState = (active: boolean) => {
-    if (active) activeLinks.value++
-    else activeLinks.value--
-}
-
 watch(activeBreakpoint, () => {
     showSubmenu.value = false
+})
+
+onMounted(() => {
+    if(props.link.sous_menu){
+        resume();
+    }
 })
 </script>
 <template>
@@ -48,17 +65,19 @@ watch(activeBreakpoint, () => {
         @pointerleave="triggerSubmenu('hover', false)" @click.prevent="triggerSubmenu('click', !showSubmenu)">
         <GlobalMainMenuLink :link="link.lien" @click="() => {
             if (!link.sous_menu) emits('closeMenu')
-        }" :class="{ open: showSubmenu, 'submenu': link.sous_menu, 'submenu-active': link.sous_menu && Math.abs(activeLinks) < link.sous_menu.length }">
-            <span>{{ link.libelle }}</span>
+        }" :class="{ open: showSubmenu, 'submenu': link.sous_menu, 'submenu-active': link.sous_menu && submenuHasActiveLinks }">
+            <span class="text">{{ link.libelle }}</span>
             <SvgDownArrow v-if="link.sous_menu" class="menu-arrow"
                 :color="activeBreakpoint == 'small' ? colors.brown : colors.black" />
         </GlobalMainMenuLink>
         <template v-if="link.sous_menu">
-            <ul class="sub-menu" v-show="showSubmenu">
-                <li v-for="subLink in link.sous_menu" :key="subLink.id">
-                    <GlobalMenuLink @active="setActiveState" :link="subLink.lien" @click="emits('closeMenu')">{{ subLink.libelle }}</GlobalMenuLink>
-                </li>
-            </ul>
+            <transition name="submenu-fade">
+                <ul class="sub-menu" v-show="showSubmenu" ref="submenuRef">
+                    <li v-for="subLink in link.sous_menu" :key="subLink.id">
+                        <GlobalSubMenuLink :link="subLink.lien" @click="emits('closeMenu')"><span class="text">{{ subLink.libelle }}</span></GlobalSubMenuLink>
+                    </li>
+                </ul>
+            </transition>
         </template>
     </li>
 </template>
@@ -70,29 +89,16 @@ li {
     width: max-content;
 }
 
-.router-link-active{
-    border-color: black;
-
-    &.submenu{
-        border-color: transparent;
-        
-        &.submenu-active {
-            border-color: black;
-        }
-    }
-}
-
 .sub-menu {
-    background-color: $light-grey;
-    color: $brown;
+    //background-color: $light-grey;
+    //color: $brown;
 
     width: max-content;
-    padding: 1rem;
-    border-radius: 20px;
+    padding: .5rem 0rem;
 
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: .5rem;
 
     position: absolute;
 
@@ -107,15 +113,7 @@ li {
         font-size: 1rem;
         font-family: "inter", sans-serif;
         font-weight: 400;
-        line-height: 100%;
-
-        a {
-            padding: .5rem 0;
-
-            &.router-link-active {
-                text-decoration: underline;
-            }
-        }
+        line-height: 1;
     }
 
     @media screen and (max-width: $small-breakpoint) {
@@ -124,6 +122,7 @@ li {
         padding: .5rem;
         padding-right: 1.5rem;
         margin-left: .25rem;
+        gap: 0rem;
 
         align-items: flex-end;
     }
@@ -139,5 +138,6 @@ li {
     width: .75rem;
     height: .75rem;
     flex-shrink: 0;
+    transition: transform .5s ease-in-out;
 }
 </style>

@@ -7,7 +7,7 @@ definePageMeta({
 });
 
 const colors = useColors();
-const { locale } = useI18n();
+const locale = useI18n();
 
 const {
     data: quiNousSommesData,
@@ -73,66 +73,70 @@ const spanifiedStaggerdConseilTitle = computed(() => {
 })
 </script>
 <template>
-    <GlobalSection id="notre-mission" :small-title="quiNousSommes?.notre_mission_titre">
-        <h3 class="big-title staggered-title" v-html="spanifiedStaggerdMissionTitle" />
-        <div id="notre-mission-boites">
-            <p>{{ quiNousSommes?.notre_mission_boite_1 }}</p>
-            <p>{{ quiNousSommes?.notre_mission_boite_2 }}</p>
-            <p>{{ quiNousSommes?.notre_mission_boite_3 }}</p>
-        </div>
-        <div class="centered-container">
-            <NuxtLink class="round-content-button" :to="{ name: 'NotreApprocheEtImplications' }">
-                <span>{{ quiNousSommes?.notre_mission_lien_titre }}</span>
-                <SvgShortDiagArrow :color="colors.white" />
-            </NuxtLink>
-        </div>
-    </GlobalSection>
-    <GlobalSection id="equipe" :small-title="quiNousSommes?.equipe_titre">
-        <h3 class="big-title staggered-title" v-html="spanifiedStaggerdEquipeTitle" />
-        <div class="text centered">
-            <p>{{ quiNousSommes?.equipe_texte }}</p>
-        </div>
-        <div id="equipe-membres">
-            <QuiNousSommesEquipeCard v-for="membre in equipeMembres" :membre="membre" :key="membre.id" />
-        </div>
-    </GlobalSection>
-    <GlobalSection id="conseil" :small-title="quiNousSommes?.conseil_titre">
-        <div class="offset-wrapper">
-            <div class="offset">
-                <h3 class="big-title staggered-title" v-html="spanifiedStaggerdConseilTitle" />
-                <div class="text">
-                    <p>{{ quiNousSommes?.conseil_texte }}</p>
+    <div>
+        <GlobalSection id="notre-mission" :small-title="quiNousSommes?.notre_mission_titre">
+            <h3 class="big-title staggered-title" v-html="spanifiedStaggerdMissionTitle" />
+            <div id="notre-mission-boites">
+                <p>{{ quiNousSommes?.notre_mission_boite_1 }}</p>
+                <p>{{ quiNousSommes?.notre_mission_boite_2 }}</p>
+                <p>{{ quiNousSommes?.notre_mission_boite_3 }}</p>
+            </div>
+            <div class="centered-container">
+                <GlobalRoundButton class="button-container">
+                    <NuxtLink class="round-content-button" :to="{ name: 'NotreApprocheEtImplications' }">
+                        <span>{{ quiNousSommes?.notre_mission_lien_titre }}</span>
+                        <SvgShortDiagArrow :color="colors.white" />
+                    </NuxtLink>
+                </GlobalRoundButton>
+            </div>
+        </GlobalSection>
+        <GlobalSection id="equipe" :small-title="quiNousSommes?.equipe_titre">
+            <h3 class="big-title staggered-title" v-html="spanifiedStaggerdEquipeTitle" />
+            <div class="text centered">
+                <p>{{ quiNousSommes?.equipe_texte }}</p>
+            </div>
+            <div id="equipe-membres">
+                <QuiNousSommesEquipeCard v-for="membre in equipeMembres" :membre="membre" :key="membre.id" />
+            </div>
+        </GlobalSection>
+        <GlobalSection id="conseil" :small-title="quiNousSommes?.conseil_titre">
+            <div class="offset-wrapper">
+                <div class="offset">
+                    <h3 class="big-title staggered-title" v-html="spanifiedStaggerdConseilTitle" />
+                    <div class="text">
+                        <p>{{ quiNousSommes?.conseil_texte }}</p>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div id="conseil-objectifs">
-            <h3>{{ quiNousSommes?.conseil_objectifs_titre }}</h3>
-            <div class="boxes">
-                <div>
-                    <p>{{ quiNousSommes?.conseil_objectifs_1 }}</p>
-                </div>
-                <div>
-                    <p>{{ quiNousSommes?.conseil_objectifs_2 }}</p>
-                </div>
-                <div>
-                    <p>{{ quiNousSommes?.conseil_objectifs_3 }}</p>
-                </div>
-                <div>
-                    <p>{{ quiNousSommes?.conseil_objectifs_4 }}</p>
-                </div>
-            </div>
-        </div>
-        <div id="conseil-membres">
-            <h3>{{ quiNousSommes?.conseil_membres_titre }}</h3>
-            <div class="boxes">
-                <div v-for="membre in conseilMembres">
-                    <h4>{{ membre.nom }}</h4>
-                    <p>{{ membre.titre }}</p>
-                    <p>{{ membre.origine }}</p>
+            <div id="conseil-objectifs">
+                <h3>{{ quiNousSommes?.conseil_objectifs_titre }}</h3>
+                <div class="boxes">
+                    <div>
+                        <p>{{ quiNousSommes?.conseil_objectifs_1 }}</p>
+                    </div>
+                    <div>
+                        <p>{{ quiNousSommes?.conseil_objectifs_2 }}</p>
+                    </div>
+                    <div>
+                        <p>{{ quiNousSommes?.conseil_objectifs_3 }}</p>
+                    </div>
+                    <div>
+                        <p>{{ quiNousSommes?.conseil_objectifs_4 }}</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </GlobalSection>
+            <div id="conseil-membres">
+                <h3>{{ quiNousSommes?.conseil_membres_titre }}</h3>
+                <div class="boxes">
+                    <div v-for="membre in conseilMembres">
+                        <h4>{{ membre.nom }}</h4>
+                        <p>{{ membre.titre }}</p>
+                        <p>{{ membre.origine }}</p>
+                    </div>
+                </div>
+            </div>
+        </GlobalSection>
+    </div>
 </template>
 <style lang="scss" scoped>
 #notre-mission {
@@ -220,7 +224,9 @@ const spanifiedStaggerdConseilTitle = computed(() => {
 
         font-size: 1.125rem;
         font-weight: 400;
+    }
 
+    .button-container{
         margin-bottom: 2rem;
     }
 }

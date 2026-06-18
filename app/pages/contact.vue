@@ -7,7 +7,7 @@ definePageMeta({
 });
 
 const colors = useColors();
-const { locale } = useI18n();
+const locale = useI18n();
 
 const {
   data: contactData,
@@ -38,33 +38,37 @@ const {
   })
 );
 const lieuxPartenairesListe = useTranslatedItems(lieuxPartenairesListeData, locale);
+
+onMounted(()=>{console.log("mounted")})
 </script>
 <template>
-  <GlobalSection id="contact" :small-title="contact?.titre" :big-title="contact?.sous_titre">
-    <SvgAccueilHero id="contact-svg" :color="colors.yellow" />
-    <div id="contact-content">
-      <div id="bureaux">
-        <h4 class="small-body-text">{{ contact?.nos_bureaux_titre }}</h4>
-        <GlobalVHtml class="medium-body-text html-texte" :html="contact?.nos_bureaux_texte" />
+  <div>
+    <GlobalSection id="contact" :small-title="contact?.titre" :big-title="contact?.sous_titre">
+      <SvgAccueilHero id="contact-svg" :color="colors.yellow" />
+      <div id="contact-content">
+        <div id="bureaux">
+          <h4 class="small-body-text">{{ contact?.nos_bureaux_titre }}</h4>
+          <GlobalVHtml class="medium-body-text html-texte" :html="contact?.nos_bureaux_texte" />
+        </div>
+        <GlobalVHtml id="contact-text" class="texte medium-body-text html-texte" :html="contact?.texte" />
       </div>
-      <GlobalVHtml id="contact-text" class="texte medium-body-text html-texte" :html="contact?.texte" />
-    </div>
-  </GlobalSection>
-  <GlobalSection id="lieux-partenaires" :small-title="contact?.lieux_partenaires_titre"
-    :big-title="contact?.lieux_partenaires_sous_titre">
-    <div id="lieux-partenaires-liste">
-      <div class="lieu-partenaire" v-for="lieu in lieuxPartenairesListe" :key="lieu.id">
-        <h4 class="small-body-text">{{ lieu.titre }}</h4>
-        <p class="large-body-text" v-html="lieu.texte" />
-        <GlobalLien v-if="lieu.lien" :lien="lieu.lien" :color="colors['brown']">
-          <template #icon>
-            <SvgSvrArrowUp :color="colors['light-grey']" />
-          </template>
-          <template #text>{{ lieu.lien_libelle }}</template>
-        </GlobalLien>
+    </GlobalSection>
+    <GlobalSection id="lieux-partenaires" :small-title="contact?.lieux_partenaires_titre"
+      :big-title="contact?.lieux_partenaires_sous_titre">
+      <div id="lieux-partenaires-liste">
+        <div class="lieu-partenaire" v-for="lieu in lieuxPartenairesListe" :key="lieu.id">
+          <h4 class="small-body-text">{{ lieu.titre }}</h4>
+          <p class="large-body-text" v-html="lieu.texte" />
+          <GlobalLien v-if="lieu.lien" :lien="lieu.lien" :color="colors['brown']">
+            <template #icon>
+              <SvgSvrArrowUp :color="colors['light-grey']" />
+            </template>
+            <template #text>{{ lieu.lien_libelle }}</template>
+          </GlobalLien>
+        </div>
       </div>
-    </div>
-  </GlobalSection>
+    </GlobalSection>
+  </div>
 </template>
 <style lang="scss" scoped>
 #contact-svg {

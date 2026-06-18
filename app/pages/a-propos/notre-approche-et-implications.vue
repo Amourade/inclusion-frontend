@@ -7,7 +7,7 @@ definePageMeta({
 });
 
 const colors = useColors();
-const { locale } = useI18n();
+const locale = useI18n();
 
 const {
   data: approcheEtImplicationsData,
@@ -76,31 +76,33 @@ const spanifiedStaggerdApprocheEtImplicationsTitle = computed(() => {
 })
 </script>
 <template>
-  <GlobalSection id="approche-et-implications" :small-title="approcheEtImplications?.approche_et_implications_titre">
-    <h3 class="big-title staggered-title" v-html="spanifiedStaggerdApprocheEtImplicationsTitle" />
-    <GlobalVHtml id="approche-et-implications-texte" :html="approcheEtImplications?.approche_et_implications_texte" />
-    <div id="approche-et-implications-buts">
-      <div v-for="but in buts">
-        <p>{{ but.texte }}</p>
+  <div>
+    <GlobalSection id="approche-et-implications" :small-title="approcheEtImplications?.approche_et_implications_titre">
+      <h3 class="big-title staggered-title" v-html="spanifiedStaggerdApprocheEtImplicationsTitle" />
+      <GlobalVHtml id="approche-et-implications-texte" :html="approcheEtImplications?.approche_et_implications_texte" />
+      <div id="approche-et-implications-buts">
+        <div v-for="but in buts">
+          <p>{{ but.texte }}</p>
+        </div>
       </div>
-    </div>
-  </GlobalSection>
-  <GlobalSection id="niveaux-dactions" :big-title="approcheEtImplications?.niveaux_daction_titre">
-    <div id="niveaux-dactions-liste">
-      <div class="niveau" v-for="niveau in niveauxDaction">
-        <h3>{{ niveau.titre }}</h3>
-        <GlobalVHtml :html="niveau.texte" />
+    </GlobalSection>
+    <GlobalSection id="niveaux-dactions" :big-title="approcheEtImplications?.niveaux_daction_titre">
+      <div id="niveaux-dactions-liste">
+        <div class="niveau" v-for="niveau in niveauxDaction">
+          <h3>{{ niveau.titre }}</h3>
+          <GlobalVHtml :html="niveau.texte" />
+        </div>
       </div>
-    </div>
-  </GlobalSection>
-  <GlobalSection id="nos-implications" :big-title="approcheEtImplications?.implications_titre">
-    <GlobalVHtml id="nos-implications-texte" :html="approcheEtImplications?.implications_texte" />
-    <div id="nos-implications-liste">
-      <div class="implication" v-for="implication in implicationsListe">
-        <GlobalVHtml :html="implication.texte" />
+    </GlobalSection>
+    <GlobalSection id="nos-implications" :big-title="approcheEtImplications?.implications_titre">
+      <GlobalVHtml id="nos-implications-texte" :html="approcheEtImplications?.implications_texte" />
+      <div id="nos-implications-liste">
+        <div class="implication" v-for="implication in implicationsListe">
+          <GlobalVHtml :html="implication.texte" />
+        </div>
       </div>
-    </div>
-  </GlobalSection>
+    </GlobalSection>
+  </div>
 </template>
 <style lang="scss" scoped>
 #approche-et-implications {

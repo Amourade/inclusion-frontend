@@ -7,7 +7,7 @@ definePageMeta({
 });
 
 const colors = useColors();
-const { locale } = useI18n();
+const locale = useI18n();
 
 const {
   data: nosEspacesData,
@@ -41,26 +41,28 @@ const espaceListe = useTranslatedItems(espaceListeData, locale);
 
 </script>
 <template>
-  <GlobalSection id="nos-espaces" :small-title="nosEspaces?.titre">
-    <h3 class="big-title smaller-centered-content">{{ nosEspaces?.sous_titre }}</h3>
-    <GlobalVHtml id="nos-espaces-texte" class="smaller-centered-content large-body-text" :html="nosEspaces?.texte" />
-  </GlobalSection>
-  <GlobalSection id="espaces-liste-section">
-    <div id="espaces-liste">
-      <template v-for="espace in espaceListe" :key="espace.id">
-        <GlobalCard class="smaller-centered-content projet" :class="{ light: espace.boite_orange_pale }">
-          <h3 class="large-body-text">{{ espace.titre }}</h3>
-          <GlobalVHtml class="projet-texte html-texte medium-body-text" :html="espace.texte" />
-          <GlobalLien v-if="espace.lien" :lien="espace.lien" :color="colors['light-black']">
-            <template #icon>
-              <SvgSvrArrowUp :color="colors['light-grey']" />
-            </template>
-            <template #text>{{ espace.lien_libelle }}</template>
-          </GlobalLien>
-        </GlobalCard>
-      </template>
-    </div>
-  </GlobalSection>
+  <div>
+    <GlobalSection id="nos-espaces" :small-title="nosEspaces?.titre">
+      <h3 class="big-title smaller-centered-content">{{ nosEspaces?.sous_titre }}</h3>
+      <GlobalVHtml id="nos-espaces-texte" class="smaller-centered-content large-body-text" :html="nosEspaces?.texte" />
+    </GlobalSection>
+    <GlobalSection id="espaces-liste-section">
+      <div id="espaces-liste">
+        <template v-for="espace in espaceListe" :key="espace.id">
+          <GlobalCard class="smaller-centered-content projet" :class="{ light: espace.boite_orange_pale }">
+            <h3 class="large-body-text">{{ espace.titre }}</h3>
+            <GlobalVHtml class="projet-texte html-texte medium-body-text" :html="espace.texte" />
+            <GlobalLien v-if="espace.lien" :lien="espace.lien" :color="colors['light-black']">
+              <template #icon>
+                <SvgSvrArrowUp :color="colors['light-grey']" />
+              </template>
+              <template #text>{{ espace.lien_libelle }}</template>
+            </GlobalLien>
+          </GlobalCard>
+        </template>
+      </div>
+    </GlobalSection>
+  </div>
 </template>
 <style lang="scss" scoped>
 #nos-espaces {

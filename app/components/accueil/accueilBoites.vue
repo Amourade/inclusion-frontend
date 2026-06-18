@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { getItems } = useDirectusItems();
 
-const { locale } = useI18n();
+const locale = useI18n();
 
 const {
   data: AccueilBoiteData,

@@ -18,3 +18,8 @@ defineProps({
         </g>
     </svg>
 </template>
+<style lang="scss" scoped>
+svg{
+    transition: fill .5s ease-in-out, stroke .5s ease-in-out;
+}
+</style>

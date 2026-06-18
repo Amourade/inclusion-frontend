@@ -8,7 +8,7 @@ definePageMeta({
     title: 'Inclusion Montréal'
 });
 
-const { locale } = useI18n();
+const locale = useI18n();
 
 const {
     data: AccueilData,

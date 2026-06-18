@@ -2,7 +2,7 @@
 import { useBreakpoints } from '@vueuse/core';
 
 const { getSingletonItem, getItems } = useDirectusItems();
-const { locale } = useI18n();
+const locale = useI18n();
 const colors = useColors();
 const breakPointsValues = useBreakpointsValues()
 const breakpoints = useBreakpoints(breakPointsValues.value);
@@ -67,7 +67,9 @@ const footerGroupeLiens = useTranslatedItems(footerGroupeLienData, locale);
                             <label for="newsletter-email">{{ footer?.infolettre_texte }}</label>
                             <div>
                                 <input id="newsletter-email" type="email" :placeholder="footer?.infolettre_courriel_placeholder" required />
-                                <button class="round-content-button" type="submit"><span>{{ footer?.infolettre_envoyer }}</span> <SvgShortDiagArrow :color="colors.brown" /></button>
+                                <GlobalRoundButton>
+                                    <button class="round-content-button" type="submit"><span>{{ footer?.infolettre_envoyer }}</span> <SvgShortDiagArrow :color="colors.brown" /></button>
+                                </GlobalRoundButton>
                             </div>
                         </form>
                     </div>

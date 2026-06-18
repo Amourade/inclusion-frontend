@@ -11,7 +11,7 @@ const emits = defineEmits<{
 }>()
 
 const colors = useColors();
-const { locale } = useI18n();
+const locale = useI18n();
 
 const catNamesArray = computed(() => {
     return props.event.categories.map(catId => props.categories?.find(cat => cat.id === catId.evenement_categorie_id)?.libelle).filter(Boolean)
@@ -63,11 +63,17 @@ const endTimeArray = props.event.heure_fin ? props.event.heure_fin.split(':') : 
         </div>
         <GlobalVHtml v-if="event.description && !compact" class="description" :html="event.description" />
         <template v-if="event.inscription_requise && event.lien_dinscription && !compact">
-            <NuxtLink v-if="!event.complet" class="round-content-button" :href="event.lien_dinscription">
-                <span>{{ event.lien_inscription_libelle }}</span>
-                <SvgShortDiagArrow :color="colors['light-grey']" />
-            </NuxtLink>
-            <p class="event-full" v-else>{{ locale === 'fr' ? 'Évènement complet' : 'Event full' }}</p>
+            <template v-if="!event.complet">
+                <GlobalRoundButton>
+                    <NuxtLink class="round-content-button" :href="event.lien_dinscription">
+                        <span>{{ event.lien_inscription_libelle }}</span>
+                        <SvgShortDiagArrow :color="colors['light-grey']" />
+                    </NuxtLink>
+                </GlobalRoundButton>
+            </template>
+            <template v-else>
+                <p class="event-full">{{ locale === 'fr' ? 'Évènement complet' : 'Event full' }}</p>
+            </template>
         </template>
     </GlobalCard>
 </template>
@@ -79,6 +85,8 @@ const endTimeArray = props.event.heure_fin ? props.event.heure_fin.split(':') : 
     border-bottom-right-radius: 50px!important;
 
     gap: .5rem!important;
+
+    transition: border-bottom-right-radius .5s ease-in-out, opacity .5s ease-in-out, max-height .5s ease-in-out, padding .5s ease-in-out;
 
     h3{
         font-weight: 500;
@@ -96,6 +104,12 @@ const endTimeArray = props.event.heure_fin ? props.event.heure_fin.split(':') : 
 
         h3{
             font-size: 1.5rem;
+        }
+
+        @media screen and (hover: hover){
+            &:hover{
+                border-bottom-right-radius: $cards-radius!important;    
+            }
         }
     }
 }

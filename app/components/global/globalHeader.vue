@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import { onClickOutside, useBreakpoints } from '@vueuse/core';
 
-const { locale, setLocale } = useI18n();
+//const { locale/* , setLocale */ } = useI18n();
+const locale = useI18n();
 const { getSingletonItem, getItems } = useDirectusItems();
 const colors = useColors();
 const breakPointsValues = useBreakpointsValues()
@@ -64,26 +65,28 @@ const lienMenuDessusData = useTranslatedItems(lienMenuDessusDataRaw, locale);
                 <span>Menu</span>
                 <SvgDownArrow class="menu-arrow" :color="colors['orange']" />
             </button>
-            <div id="inner-menu" v-show="activeBreakpoint == 'small' && showMenu || activeBreakpoint != 'small'">
-                <ul>
-                    <HeaderMainMenuLink v-for="item in lienMenuData" :key="item.id" :link="item"
-                        @closeMenu="showMenu = false" />
-                    <li v-if="locale !== 'en'">
-                        <GlobalMainMenuLink link="#" @click.prevent="setLocale('en'); showMenu = false"><span>en</span></GlobalMainMenuLink>
-                    </li>
-                    <li v-if="locale !== 'fr'">
-                        <GlobalMainMenuLink link="#" @click.prevent="setLocale('fr'); showMenu = false"><span>fr</span></GlobalMainMenuLink>
-                    </li>
-                </ul>
-                <ul class="other-buttons" v-if="lienMenuDessusData && lienMenuDessusData.length > 0">
-                    <li v-for="item in lienMenuDessusData" :key="item.id">
-                        <GlobalMainMenuLink :color="colors.orange" :link="item.lien" class="agenda-link"
-                            @click="showMenu = false">
-                            <span>{{ item.libelle }}</span>
-                        </GlobalMainMenuLink>
-                    </li>
-                </ul>
-            </div>
+            <Transition name="menu-fade">
+                <div id="inner-menu" v-show="activeBreakpoint == 'small' && showMenu || activeBreakpoint != 'small'">
+                    <ul>
+                        <HeaderMainMenuLink v-for="item in lienMenuData" :key="item.id" :link="item"
+                            @closeMenu="showMenu = false" />
+                        <!-- <li v-if="locale !== 'en'">
+                            <GlobalMainMenuLink link="#" @click.prevent="setLocale('en'); showMenu = false"><span>en</span></GlobalMainMenuLink>
+                        </li>
+                        <li v-if="locale !== 'fr'">
+                            <GlobalMainMenuLink link="#" @click.prevent="setLocale('fr'); showMenu = false"><span>fr</span></GlobalMainMenuLink>
+                        </li> -->
+                    </ul>
+                    <ul class="top-buttons" v-if="lienMenuDessusData && lienMenuDessusData.length > 0">
+                        <li v-for="item in lienMenuDessusData" :key="item.id">
+                            <GlobalMainMenuLink :color="colors.orange" :link="item.lien" class="top-link"
+                                @click="showMenu = false">
+                                <span class="text">{{ item.libelle }}</span>
+                            </GlobalMainMenuLink>
+                        </li>
+                    </ul>
+                </div>
+            </Transition>
         </nav>
     </header>
 </template>
@@ -140,16 +143,23 @@ header {
 
     cursor: pointer;
 
+    transition: background-color .5s ease-in-out, color .5s ease-in-out;
+
     svg {
         width: .75rem;
         height: .75rem;
         flex-shrink: 0;
         //rotate: 225deg;
+        transition: rotate .5s ease-in-out, fill .5s ease-in-out;
     }
 
     &.open {
+        background-color: $orange;
+        color: $brown;
+
         svg {
             rotate: 180deg;
+            fill: $brown!important;
         }
     }
 }
@@ -218,35 +228,13 @@ header {
         width: max-content;
     }
 
-    &.other-buttons {
+    &.top-buttons {
         display: flex;
         flex-direction: row;
         gap: 1rem;
 
         justify-content: flex-end;
         margin: 0;
-
-        li {
-            a {
-                background-color: $brown;
-                color: $orange;
-                padding-left: 1rem;
-                padding-right: 1rem;
-            }
-
-            svg {
-                width: .75rem;
-                height: .75rem;
-                flex-shrink: 0;
-                rotate: 225deg;
-            }
-
-            @media screen and (hover: hover) {
-                &:hover {
-                    border-color: transparent;
-                }
-            }
-        }
 
         @media screen and (max-width: $small-breakpoint) {
             flex-direction: column;

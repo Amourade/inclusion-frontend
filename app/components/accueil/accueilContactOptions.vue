@@ -2,7 +2,7 @@
 const { getItems } = useDirectusItems();
 
 const colors = useColors();
-const { locale } = useI18n();
+const locale = useI18n();
 
 const {
   data: AccueilContactOptionsData,

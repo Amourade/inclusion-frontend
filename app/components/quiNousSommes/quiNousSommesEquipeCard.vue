@@ -21,16 +21,18 @@ const showBio = ref(false);
             </div>
         </div>
         <template v-if="membre.bio">
-            <GlobalLien lien="#" class="lien-bio" @click.prevent="showBio = true">
+            <GlobalLien lien="#" class="lien-bio" @click.prevent="showBio = true" :animation="'plus'">
                 <template #icon><SvgPlusSign class="plus-sign" /></template>
                 <template #text>{{ membre.a_propos_libelle ? membre.a_propos_libelle : 'En savoir plus' }}</template>
             </GlobalLien>
-            <div v-if="showBio" class="bio">
-                <GlobalVHtml class="text" :html="membre.bio"></GlobalVHtml>
-                <GlobalLien lien="#" class="lien-bio" @click.prevent="showBio = false">
-                    <template #icon><SvgPlusSign class="plus-sign" /></template>
-                </GlobalLien>
-            </div>
+            <Transition name="team-card-fade">
+                <div v-if="showBio" class="bio">
+                    <GlobalVHtml class="text" :html="membre.bio"></GlobalVHtml>
+                    <GlobalLien lien="#" class="lien-bio no-text" @click.prevent="showBio = false" :animation="'plus'">
+                        <template #icon><SvgPlusSign class="plus-sign" /></template>
+                    </GlobalLien>
+                </div>
+            </Transition>
         </template>
         <div class="photo" v-if="membre.photo">
             <img :src="getThumbnail(membre.photo, {width: 140, height: 140, format: 'webp'})" :alt="membre.nom" />

@@ -9,14 +9,16 @@ const props = defineProps<{
 }>()
 
 const colors = useColors();
-const { locale } = useI18n();
-const d = new Date(new Date().toLocaleString("en-US", {timeZone: "America/Toronto"})); // timezone ex: Asia/Jerusalem
+const locale = useI18n();
+const d = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Toronto" })); // timezone ex: Asia/Jerusalem
 const nowMonth = useDateFormat(d, 'M',);
 const nowYear = useDateFormat(d, 'YYYY',);
 const breakPointsValues = useBreakpointsValues()
 const breakpoints = useBreakpoints(breakPointsValues.value);
 const activeBreakpoint = breakpoints.active();
 const mounted = useMounted();
+const fakeLoading = ref(false);
+let fakeLoadingTimeout: number;
 
 const query = useRoute().query
 const parsedQueryYear = parseInt(query.year as string)
@@ -133,11 +135,42 @@ function nextMonth() {
 }
 
 const toggleFilter = (categoryId: number) => {
-  if (activeFilters.value.includes(categoryId)) {
-    activeFilters.value = activeFilters.value.filter(id => id !== categoryId);
-  } else {
-    activeFilters.value.push(categoryId);
-  }
+  if(fakeLoading.value) return;
+
+  clearTimeout(fakeLoadingTimeout)
+  fakeLoading.value = true;
+  fakeLoadingTimeout = setTimeout(() => {
+    fakeLoading.value = false;
+    if (activeFilters.value.includes(categoryId)) {
+      activeFilters.value = activeFilters.value.filter(id => id !== categoryId);
+    } else {
+      activeFilters.value.push(categoryId);
+    }
+  }, 500)
+}
+
+const toggleInscriptionFilter = () => {
+  if(fakeLoading.value) return;
+  
+  clearTimeout(fakeLoadingTimeout)
+  fakeLoading.value = true;
+  fakeLoadingTimeout = setTimeout(() => {
+    fakeLoading.value = false;
+    sansInscriptionFilterActive.value = !sansInscriptionFilterActive.value
+  }, 500)
+}
+
+const removeFilters = () => {
+  if(fakeLoading.value) return;
+  
+  clearTimeout(fakeLoadingTimeout)
+  fakeLoading.value = true;
+  fakeLoadingTimeout = setTimeout(() => {
+    fakeLoading.value = false;
+    activeFilters.value = [];
+    avecInscriptionFilterActive.value = false;
+    sansInscriptionFilterActive.value = false;
+  }, 500)
 }
 
 const getFilterTitlePrefix = (active: boolean): string => {
@@ -146,12 +179,6 @@ const getFilterTitlePrefix = (active: boolean): string => {
   } else {
     return active ? 'Remove filter: ' : 'Add filter: ';
   }
-}
-
-const removeFilters = () => {
-  activeFilters.value = [];
-  avecInscriptionFilterActive.value = false;
-  sansInscriptionFilterActive.value = false;
 }
 
 const navigateToEvent = (id: number) => {
@@ -199,23 +226,27 @@ const highlightEvents = (ids: number[]) => {
     }
   })
 
-  if(earliestEvent){
+  if (earliestEvent) {
     const eventElement = document.getElementById(earliestEvent.toString());
     eventElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
     highLightTimeout = setTimeout(() => {
-      eventsRefs.value.forEach((e)=>e.highlight(ids))
+      eventsRefs.value.forEach((e) => e.highlight(ids))
     }, 500)
   }
 }
 
 watch([displayMonth, displayYear], () => {
-  evenementsRefresh();
+  clearTimeout(fakeLoadingTimeout)
+  fakeLoading.value = true;
+  fakeLoadingTimeout = setTimeout(() => {
+    fakeLoading.value = false;
+    evenementsRefresh();
+  }, 500)
 })
 
 onMounted(() => {
-  console.log(query)
-  console.log("refreshing for: ", displayMonth.value, displayYear.value)
+  //** Maybe only fetch the events when mounted?? */
   evenementsRefresh();
 })
 
@@ -255,7 +286,7 @@ onUnmounted(() => {
           {{ calendrier?.libelle_categorie_avec_inscription }}
         </button> -->
         <button :class="[{ active: sansInscriptionFilterActive }, 'category-btn']"
-          @click.prevent="sansInscriptionFilterActive = !sansInscriptionFilterActive" :aria-label="locale == 'fr' ?
+          @click.prevent="toggleInscriptionFilter" :aria-label="locale == 'fr' ?
             getFilterTitlePrefix(sansInscriptionFilterActive) + 'événements sans inscription' :
             getFilterTitlePrefix(sansInscriptionFilterActive) + 'events without registration'" :title="locale == 'fr' ?
               getFilterTitlePrefix(sansInscriptionFilterActive) + 'événements sans inscription' :
@@ -291,11 +322,17 @@ onUnmounted(() => {
           </button>
         </div>
       </div>
-      <div id="calendar-events" v-if="fileteredEvenements.length" :class="{ compact: compactMode }">
-        <CalendarEvent v-for="evenement in fileteredEvenements" ref="eventsRefs" :key="evenement.id" :event="evenement"
-          :compact="compactMode" :categories="categories" @go-to-event="navigateToEvent" />
-      </div>
-      <p v-else class="no-events">{{ calendrier?.pas_devenements_message }}</p>
+      <Transition name="events-wrapper-fade" appear>
+        <div class="events-wrapper" v-show="!fakeLoading && !evenementsPending"
+          :class="{ /* loading: fakeLoading || evenementsPending */ }">
+              <div tag="div" name="event-card-fade" id="calendar-events" v-if="fileteredEvenements.length"
+                :class="{ compact: compactMode }">
+                <CalendarEvent v-for="evenement in fileteredEvenements" ref="eventsRefs" :key="evenement.id"
+                  :event="evenement" :compact="compactMode" :categories="categories" @go-to-event="navigateToEvent" />
+              </div>
+              <p v-else class="no-events">{{ calendrier?.pas_devenements_message }}</p>
+        </div>
+      </Transition>
     </section>
   </GlobalSection>
 </template>
@@ -347,6 +384,14 @@ onUnmounted(() => {
     &.previous {
       transform: rotate(180deg);
     }
+
+    @media screen and (hover: hover) {
+      &:hover {
+        :deep(svg) {
+          fill: $brown !important;
+        }
+      }
+    }
   }
 }
 
@@ -386,7 +431,7 @@ onUnmounted(() => {
 
       cursor: pointer;
 
-      transition: border-color 0.2s;
+      transition: border-color 0.5s ease-in-out;
 
       &.active {
         border: 1px solid $light-black;
@@ -439,6 +484,22 @@ onUnmounted(() => {
     flex-direction: column;
     align-items: center;
     gap: 3rem;
+  }
+}
+
+.events-wrapper {
+  width: 100%;
+  //transition: opacity .5s ease-in-out;
+
+  position: relative;
+
+  &.loading {
+    opacity: 0.4;
+    pointer-events: none;
+
+    * {
+      pointer-events: none;
+    }
   }
 }
 

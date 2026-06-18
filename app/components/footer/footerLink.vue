@@ -10,3 +10,28 @@ const parsedLink = useParseLink(props.link)
         <slot />
     </NuxtLink>
 </template>
+<style lang="scss" scoped>
+a{
+    position: relative;
+    display: inline-block;
+
+    &::before{
+        content: "";
+        position: absolute;
+        bottom: 0px;
+        left: 0px;
+        width: 0%;
+        height: 1px;
+        background-color: $light-grey;
+
+        transition: width .5s ease-in-out;
+    }
+    
+    @media screen and (hover: hover){
+        &:hover::before{
+            width: 100%;
+        }
+        
+    }
+}
+</style>

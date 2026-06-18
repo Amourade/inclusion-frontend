@@ -6,19 +6,7 @@ const props = defineProps<{
 const emits = defineEmits<{
     (e: 'active', value: boolean): void
 }>()
-const route = useRoute()
 const parsedLink = useParseLink(props.link)
-
-const isActive = computed(() => {
-    if (parsedLink.value === undefined || typeof parsedLink.value === 'string') return false
-    return route.path === parsedLink.value.path
-})
-
-watch(isActive, (newValue) => {
-    emits('active', newValue)
-}, {
-    immediate: true
-})
 </script>
 <template>
     <NuxtLink :to="parsedLink" :class="{ external: parsedLink.target === '_blank' }">
