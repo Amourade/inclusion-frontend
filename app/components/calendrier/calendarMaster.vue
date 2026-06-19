@@ -586,6 +586,7 @@ onUnmounted(() => {
   @media screen and (max-width: $small-breakpoint) {
     // #calendar-body is a column here and the widget is hidden, so don't stick.
     position: static;
+    align-self: center;
   }
 }
 

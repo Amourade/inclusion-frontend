@@ -227,35 +227,31 @@ li{
 
 @keyframes link-text-hover-animation{
     0%, 100% {
-        top: 0px;
+        transform: translateY(0);
     }
     50% {
-        top: calc(100% + .5rem);
+        transform: translateY(calc(100% + .5rem));
     }
     50.001% {
-        top: calc(-100% - .5rem);
+        transform: translateY(calc(-100% - .5rem));
     }
 }
 
 @keyframes top-link-svg-hover-animation{
     0%, 100% {
-        top: 0px;
-        left: 0px;
+        transform: translate(0, 0);
     }
     50% {
-        top: -3px;
-        left: 3px;
+        transform: translate(0px, 3px);
     }
 }
 
 @keyframes global-link-svg-hover-animation{
     0%, 100% {
-        top: 0px;
-        left: 0px;
+        transform: translate(0, 0);
     }
     50% {
-        top: -2px;
-        left: 2px;
+        transform: translate(2px, -2px);
     }
 }
 

@@ -41,6 +41,7 @@ const playHoverAnimation = () => {
     :deep(.text){
         position: relative;
         top: 0px;
+        display: inline-block;
     }
 
     @media screen and (max-width: $small-breakpoint){

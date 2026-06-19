@@ -6,7 +6,7 @@ const props = defineProps<{
 
 const animate = ref(false)
 
-const playHoverAnimation = () => {
+const playHoverAnimation = (e: PointerEvent) => {
     if (animate.value) return;
     animate.value = true;
 
