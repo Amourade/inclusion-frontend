@@ -43,7 +43,7 @@ const startTimeArray = props.event.heure_debut ? props.event.heure_debut.split('
 const endTimeArray = props.event.heure_fin ? props.event.heure_fin.split(':') : []
 </script>
 <template>
-    <GlobalCard :id="event.id" class="event" :class="{compact: compact}" :tabindex="compact ? 1 : 0" @click="goToEvent">
+    <GlobalCard :id="event.id" class="event" :class="{compact: compact}" :tabindex="compact ? 1 : 0" @pointerdown="goToEvent">
         <div class="categories">
             <span v-if="catNamesArray.length > 0" class="categorie-list">{{ catNamesArray.join(', ') }}<span class="registration"> - {{ locale == 'fr' ? event.inscription_requise ? "Inscription requise" : "Sans Inscription" : event.inscription_requise ? "Registration required" : "No registration" }}</span></span>
         </div>

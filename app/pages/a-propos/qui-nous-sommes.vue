@@ -3,8 +3,12 @@ const { getSingletonItem, getItems } = useDirectusItems();
 
 definePageMeta({
     name: 'QuiNousSommes',
-    title: 'Qui nous sommes - Inclusion Montréal'
 });
+
+useSeoMeta({
+  author: 'Projet Inclusion',
+    title: 'Qui nous sommes - Inclusion Montréal'
+})
 
 const colors = useColors();
 const locale = useI18n();
@@ -73,7 +77,7 @@ const spanifiedStaggerdConseilTitle = computed(() => {
 })
 </script>
 <template>
-    <div>
+    <div class="page-wrapper">
         <GlobalSection id="notre-mission" :small-title="quiNousSommes?.notre_mission_titre">
             <h3 class="big-title staggered-title" v-html="spanifiedStaggerdMissionTitle" />
             <div id="notre-mission-boites">

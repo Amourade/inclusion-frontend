@@ -4,8 +4,7 @@ import CalendarMaster from '~/components/calendrier/calendarMaster.vue';
 const { getSingletonItem } = useDirectusItems();
 
 definePageMeta({
-    name: 'index',
-    title: 'Inclusion Montréal'
+    name: 'index'
 });
 
 const locale = useI18n();
@@ -26,7 +25,7 @@ const {
 const Accueil = useTranslatedItem(AccueilData, locale);
 </script>
 <template>
-    <div>
+    <div class="page-wrapper">
         <AccueilHero />
         <GlobalSection id="accueil-intro" :small-title="Accueil?.intro_titre">
             <p>{{ Accueil?.intro_texte }}</p>

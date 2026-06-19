@@ -1,5 +1,13 @@
 <script setup lang="ts">
 const showTransitionScreen = ref(true);
+const route = useRoute()
+
+useHead({
+  meta: [{ property: 'og:title', content: `${route.meta.title}` }],
+  titleTemplate: (titleChunk) => {
+    return titleChunk ? `${titleChunk} - Projet Inclusion` : 'Projet Inclusion';
+  }
+})
 
 onMounted(() => {
   showTransitionScreen.value = false;

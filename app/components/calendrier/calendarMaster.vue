@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useBreakpoints, useDateFormat, useNow, useMounted, useTemplateRefsList, useScroll } from '@vueuse/core';
+import { useBreakpoints, useDateFormat, useNow, useMounted, useTemplateRefsList, useScroll, usePointerSwipe } from '@vueuse/core';
 import CalendarEvent from '~/components/calendrier/calendarEvent.vue';
 import CalendarWidget from '~/components/calendrier/calendarWidget.vue';
 const { getSingletonItem, getItems } = useDirectusItems();
@@ -23,12 +23,40 @@ const eventsWrapper = useTemplateRef('eventsWrapperRef')
 const { x, y, isScrolling, arrivedState, directions, measure} = useScroll(eventsWrapper, {
   behavior: 'smooth'
 })
+const { isSwiping, direction } = usePointerSwipe(eventsWrapper, {
+  threshold: 100,
+  disableTextSelect: true
+})
+
+// Navigation is "prepared" on pointerdown of an event and only committed on
+// pointerup if no swipe happened during the gesture. This lets the user swipe
+// the horizontal events carousel without triggering a navigation.
+const pendingEventId = ref<number | null>(null)
+// Tracked separately because `isSwiping` resets to false on pointerup, which
+// would race with the pointerup that commits the navigation.
+let swipeDetectedDuringGesture = false;
+
+watch(isSwiping, (swiping) => {
+  if (swiping) {
+    swipeDetectedDuringGesture = true;
+    pendingEventId.value = null;
+
+    // Fired once per swipe (isSwiping only flips false -> true a single time
+    // per gesture), so the carousel advances exactly one page per swipe.
+    if (direction.value === 'left' || direction.value === 'right') {
+      scrollEvents(direction.value === 'left' ? 'right' : 'left')
+    }
+  }
+})
 
 const query = useRoute().query
 const parsedQueryYear = parseInt(query.year as string)
 const parsedQueryMonth = parseInt(query.month as string)
 const parsedQueryId = parseInt(query.id as string)
+const parsedQueryFilter = parseInt(query.filter as string)
 let initialScrollAtDone = false;
+
+let left = 0;
 
 const displayYear = ref(parsedQueryYear ? parsedQueryYear : parseInt(nowYear.value))
 const displayMonth = ref(parsedQueryMonth ? parsedQueryMonth : parseInt(nowMonth.value));
@@ -120,6 +148,15 @@ const activeFilters = ref<number[]>([]);
 const avecInscriptionFilterActive = ref(false);
 const sansInscriptionFilterActive = ref(false);
 
+// If the query contains a `filter` key matching a real category id, toggle that filter
+if (!isNaN(parsedQueryFilter) && categories.value?.some(cat => cat.id === parsedQueryFilter)) {
+  if (activeFilters.value.includes(parsedQueryFilter)) {
+    activeFilters.value = activeFilters.value.filter(id => id !== parsedQueryFilter);
+  } else {
+    activeFilters.value.push(parsedQueryFilter);
+  }
+}
+
 function previousMonth() {
   if (displayMonth.value === 1) {
     displayMonth.value = 12
@@ -165,7 +202,7 @@ const toggleInscriptionFilter = () => {
 }
 
 const removeFilters = () => {
-  if (fakeLoading.value) return;
+  if (fakeLoading.value || activeFilters.value.length == 0) return;
 
   clearTimeout(fakeLoadingTimeout)
   fakeLoading.value = true;
@@ -187,6 +224,21 @@ const getFilterTitlePrefix = (active: boolean): string => {
 
 const navigateToEvent = (id: number) => {
   navigateTo({ name: 'Calendrier', query: { id, month: displayMonth.value, year: displayYear.value } })
+}
+
+// Called on an event's pointerdown: arm the navigation for this gesture.
+const prepareNavigateToEvent = (id: number) => {
+  swipeDetectedDuringGesture = false;
+  pendingEventId.value = id;
+}
+
+// Called on pointerup over the events area: navigate only if the gesture
+// wasn't a swipe.
+const commitNavigateToEvent = () => {
+  const id = pendingEventId.value;
+  pendingEventId.value = null;
+  if (id === null || swipeDetectedDuringGesture) return;
+  navigateToEvent(id);
 }
 
 watch([evenementsPending, mounted], (newVal) => {
@@ -241,16 +293,25 @@ const highlightEvents = (ids: number[]) => {
 }
 
 const scrollEvents = (direction: 'left' | 'right') => {
-  
   const clientWidth = eventsWrapper.value?.clientWidth;
   
   if(!clientWidth) return;
 
-  if(direction == 'right'){
-    x.value = x.value + clientWidth;
-  }else{
-    x.value = x.value - clientWidth;
+  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+
+  if(direction == 'right' && !arrivedState.right){
+    left += clientWidth + rem;
   }
+  if(direction == 'left' && !arrivedState.left){
+    left -= clientWidth + rem;
+  }
+
+  x.value = left
+}
+
+const resetScrollEvents = () => {
+  left = 0;
+  x.value = left;
 }
 
 watch([displayMonth, displayYear], () => {
@@ -260,6 +321,10 @@ watch([displayMonth, displayYear], () => {
     fakeLoading.value = false;
     evenementsRefresh();
   }, 500)
+})
+
+watch(activeBreakpoint, ()=>{
+  resetScrollEvents();
 })
 
 onMounted(() => {
@@ -323,7 +388,7 @@ onUnmounted(() => {
       </div>
     </div>
     <section id="calendar-body">
-      <div id="calender-widget-wrapper" v-if="activeBreakpoint == 'small' && compactMode || !compactMode">
+      <div id="calendar-widget-wrapper" v-if="activeBreakpoint == 'small' && compactMode || !compactMode">
         <CalendarWidget v-if="activeBreakpoint !== 'small'" v-model:month="displayMonth" v-model:year="displayYear"
           :events="evenementsPending ? [] : fileteredEvenements" @highlight-events="highlightEvents" />
         <div class="month-nav" v-if="activeBreakpoint == 'small'">
@@ -339,7 +404,7 @@ onUnmounted(() => {
           </button>
         </div>
       </div>
-      <Transition name="events-wrapper-fade" appear @after-enter="measure()">
+      <Transition name="events-wrapper-fade" appear @after-enter="() => { measure(); resetScrollEvents()}">
         <div class="events-wrapper" v-show="!fakeLoading && !evenementsPending"
           :class="{ compact: compactMode }">
           <div class="events-nav" v-if="compactMode">
@@ -354,9 +419,9 @@ onUnmounted(() => {
             </button>
           </div>
           <div ref="eventsWrapperRef" name="event-card-fade" id="calendar-events" v-if="fileteredEvenements.length"
-            :class="{ compact: compactMode }">
+            :class="{ compact: compactMode }" @pointerup="commitNavigateToEvent" @pointercancel="pendingEventId = null">
             <CalendarEvent v-for="evenement in fileteredEvenements" ref="eventsRefs" :key="evenement.id"
-              :event="evenement" :compact="compactMode" :categories="categories" @go-to-event="navigateToEvent" />
+              :event="evenement" :compact="compactMode" :categories="categories" @go-to-event="prepareNavigateToEvent" />
           </div>
           <p v-else class="no-events">{{ calendrier?.pas_devenements_message }}</p>
         </div>
@@ -504,11 +569,24 @@ onUnmounted(() => {
   }
 }
 
-#calender-widget-wrapper {
+#calendar-widget-wrapper {
   display: flex;
   justify-content: center;
 
   flex-shrink: 0;
+
+  // Stay in view while the (taller) events column scrolls past. Sticky
+  // naturally stops at the bottom of #calendar-body, so it never leaves
+  // its container. align-self: flex-start prevents the flex item from
+  // stretching to the row's full height (which would defeat sticking).
+  position: sticky;
+  top: 1rem;
+  align-self: flex-start;
+
+  @media screen and (max-width: $small-breakpoint) {
+    // #calendar-body is a column here and the widget is hidden, so don't stick.
+    position: static;
+  }
 }
 
 #calendar-body {
@@ -589,11 +667,7 @@ onUnmounted(() => {
 
     gap: 0rem;
 
-    overflow-y: auto;
-
-    -ms-overflow-style: none;
-    /* IE and Edge */
-    scrollbar-width: none;
+    overflow: hidden;
 
     /* Firefox */
     &::-webkit-scrollbar {

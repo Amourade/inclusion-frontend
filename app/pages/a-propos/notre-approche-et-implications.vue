@@ -3,8 +3,12 @@ const { getSingletonItem, getItems } = useDirectusItems();
 
 definePageMeta({
   name: 'NotreApprocheEtImplications',
-  title: 'Qui nous sommes - Inclusion Montréal'
 });
+
+useSeoMeta({
+  author: 'Projet Inclusion',
+  title: 'Notre approche et implications'
+})
 
 const colors = useColors();
 const locale = useI18n();
@@ -76,7 +80,7 @@ const spanifiedStaggerdApprocheEtImplicationsTitle = computed(() => {
 })
 </script>
 <template>
-  <div>
+  <div class="page-wrapper">
     <GlobalSection id="approche-et-implications" :small-title="approcheEtImplications?.approche_et_implications_titre">
       <h3 class="big-title staggered-title" v-html="spanifiedStaggerdApprocheEtImplicationsTitle" />
       <GlobalVHtml id="approche-et-implications-texte" :html="approcheEtImplications?.approche_et_implications_texte" />

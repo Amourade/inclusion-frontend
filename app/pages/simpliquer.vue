@@ -3,8 +3,12 @@ const { getSingletonItem, getItems } = useDirectusItems();
 
 definePageMeta({
   name: 'Simpliquer',
-  title: 'S\'impliquer - Inclusion Montréal'
 });
+
+useSeoMeta({
+    author: 'Projet Inclusion',
+    title: 'S\'impliquer'
+})
 
 const colors = useColors();
 const locale = useI18n();
@@ -47,25 +51,27 @@ const spanifiedStaggerdSimpliquerTitle = computed(() => {
 })
 </script>
 <template>
-  <GlobalSection id="simpliquer" :small-title="simpliquer?.titre">
-    <h3 class="big-title staggered-title" v-html="spanifiedStaggerdSimpliquerTitle" />
-    <GlobalVHtml id="simpliquer-texte" class="large-body-text" :html="simpliquer?.texte" />
-    <div id="facon-de-simpliquer-liste">
-      <h3 class="big-title">{{ simpliquer?.facons_de_simpliquer_titre }}</h3>
-      <div class="liste">
-        <GlobalCard class="facon" v-for="facon in faconDeSimpliquerListe">
-          <h4>{{ facon?.titre }}</h4>
-          <GlobalVHtml class="small-body-text" :html="facon?.texte"></GlobalVHtml>
-          <GlobalLien v-if="facon.lien" :lien="facon.lien" :color="colors['brown']">
-            <template #icon>
-              <SvgSvrArrowUp :color="colors['light-grey']" />
-            </template>
-            <template #text>{{ facon.lien_libelle }}</template>
-          </GlobalLien>
-        </GlobalCard>
+  <div class="page-wrapper">
+    <GlobalSection id="simpliquer" :small-title="simpliquer?.titre">
+      <h3 class="big-title staggered-title" v-html="spanifiedStaggerdSimpliquerTitle" />
+      <GlobalVHtml id="simpliquer-texte" class="large-body-text" :html="simpliquer?.texte" />
+      <div id="facon-de-simpliquer-liste">
+        <h3 class="big-title">{{ simpliquer?.facons_de_simpliquer_titre }}</h3>
+        <div class="liste">
+          <GlobalCard class="facon" v-for="facon in faconDeSimpliquerListe">
+            <h4>{{ facon?.titre }}</h4>
+            <GlobalVHtml class="small-body-text" :html="facon?.texte"></GlobalVHtml>
+            <GlobalLien v-if="facon.lien" :lien="facon.lien" :color="colors['brown']">
+              <template #icon>
+                <SvgSvrArrowUp :color="colors['light-grey']" />
+              </template>
+              <template #text>{{ facon.lien_libelle }}</template>
+            </GlobalLien>
+          </GlobalCard>
+        </div>
       </div>
-    </div>
-  </GlobalSection>
+    </GlobalSection>
+  </div>
 </template>
 <style lang="scss" scoped>
 #simpliquer {

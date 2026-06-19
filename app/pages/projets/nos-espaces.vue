@@ -3,8 +3,12 @@ const { getSingletonItem, getItems } = useDirectusItems();
 
 definePageMeta({
   name: 'NosEspaces',
-  title: 'Nos espaces - Inclusion Montréal'
 });
+
+useSeoMeta({
+    author: 'Projet Inclusion',
+    title: 'Nos espaces'
+})
 
 const colors = useColors();
 const locale = useI18n();
@@ -41,7 +45,7 @@ const espaceListe = useTranslatedItems(espaceListeData, locale);
 
 </script>
 <template>
-  <div>
+  <div class="page-wrapper">
     <GlobalSection id="nos-espaces" :small-title="nosEspaces?.titre">
       <h3 class="big-title smaller-centered-content">{{ nosEspaces?.sous_titre }}</h3>
       <GlobalVHtml id="nos-espaces-texte" class="smaller-centered-content large-body-text" :html="nosEspaces?.texte" />

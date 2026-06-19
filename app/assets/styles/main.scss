@@ -330,6 +330,12 @@ li{
   overflow-y: hidden!important;
 }
 
+.page-wrapper{
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 /* .event-card-fade-leave-active {
   position: absolute;
 } */

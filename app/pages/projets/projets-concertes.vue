@@ -4,8 +4,12 @@ const { getSingletonItem, getItems } = useDirectusItems();
 
 definePageMeta({
   name: 'ProjetsConcertes',
-  title: 'Projets concertés - Inclusion Montréal'
 });
+
+useSeoMeta({
+  author: 'Projet Inclusion',
+  title: 'Projets concertés'
+})
 
 const colors = useColors();
 const locale = useI18n();
@@ -19,7 +23,7 @@ const {
   getSingletonItem<ProjetsConcertes>({
     collection: "projets_concertes",
     params: {
-        fields: ["*", "translations.*"]
+      fields: ["*", "translations.*"]
     }
   })
 );
@@ -34,25 +38,26 @@ const {
   getItems<Projet>({
     collection: "projets",
     params: {
-        fields: ["*", "translations.*"]
+      fields: ["*", "translations.*"]
     }
   })
 );
 const projetsListe = useTranslatedItems(projetsListeData, locale);
 </script>
 <template>
-  <div>
+  <div class="page-wrapper">
     <GlobalSection id="projets-concertes" :small-title="projetsConcerte?.titre">
       <h3 class="big-title smaller-centered-content">{{ projetsConcerte?.sous_titre }}</h3>
       <GlobalVHtml id="projets-concertes-texte" class="smaller-centered-content large-body-text"
         :html="projetsConcerte?.texte_intro" />
     </GlobalSection>
     <GlobalSection id="projets-exemples">
-      <GlobalVHtml id="projets-exemples-texte"
-        class="smaller-centered-content large-body-text" :html="projetsConcerte?.texte_projets" />
+      <GlobalVHtml id="projets-exemples-texte" class="smaller-centered-content large-body-text"
+        :html="projetsConcerte?.texte_projets" />
       <div id="projets-liste">
         <template v-for="projet in projetsListe" :key="projet.id">
-          <GlobalCard :id="slugify(projet.titre)" class="smaller-centered-content projet" :class="{ light: projet.boite_orange_pale }">
+          <GlobalCard :id="slugify(projet.titre)" class="smaller-centered-content projet"
+            :class="{ light: projet.boite_orange_pale }">
             <h3 class="large-body-text">{{ projet.titre }}</h3>
             <GlobalVHtml class="projet-texte html-texte medium-body-text" :html="projet.texte" />
             <GlobalLien v-if="projet.lien" :lien="projet.lien" :color="colors['light-black']">

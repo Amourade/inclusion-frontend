@@ -3,8 +3,12 @@ const { getSingletonItem, getItems } = useDirectusItems();
 
 definePageMeta({
   name: 'SoutienAuxOrganisations',
-  title: 'Soutient aux organisations - Inclusion Montréal'
 });
+
+useSeoMeta({
+    author: 'Projet Inclusion',
+    title: 'Soutient aux organisations'
+})
 
 const colors = useColors();
 const locale = useI18n();
@@ -40,20 +44,22 @@ const {
 const ideesThemesListe = useTranslatedItems(ideesThemesListeRaw, locale);
 </script>
 <template>
-  <GlobalSection id="soutien-aux-organisations" :small-title="soutienAuxOrganisations?.titre">
-    <h3 class="big-title" v-html="soutienAuxOrganisations?.sous_titre" />
-    <GlobalVHtml id="soutient-aux-organisations-intro-texte" class="large-body-text"
-      :html="soutienAuxOrganisations?.texte_intro" />
-    <GlobalVHtml id="soutient-aux-organisations-description-texte" class="small-body-text html-texte"
-      :html="soutienAuxOrganisations?.texte_description" />
-    <div id="idees-themes-liste">
-      <div class="idee" v-for="idee in ideesThemesListe">
-        <p class="medium-body-text">{{ idee?.texte }}</p>
+  <div class="page-wrapper">
+    <GlobalSection id="soutien-aux-organisations" :small-title="soutienAuxOrganisations?.titre">
+      <h3 class="big-title" v-html="soutienAuxOrganisations?.sous_titre" />
+      <GlobalVHtml id="soutient-aux-organisations-intro-texte" class="large-body-text"
+        :html="soutienAuxOrganisations?.texte_intro" />
+      <GlobalVHtml id="soutient-aux-organisations-description-texte" class="small-body-text html-texte"
+        :html="soutienAuxOrganisations?.texte_description" />
+      <div id="idees-themes-liste">
+        <div class="idee" v-for="idee in ideesThemesListe">
+          <p class="medium-body-text">{{ idee?.texte }}</p>
+        </div>
       </div>
-    </div>
-    <GlobalVHtml id="soutient-aux-organisations-bas-texte" class="html-texte small-body-text"
-      :html="soutienAuxOrganisations?.texte_bas" />
-  </GlobalSection>
+      <GlobalVHtml id="soutient-aux-organisations-bas-texte" class="html-texte small-body-text"
+        :html="soutienAuxOrganisations?.texte_bas" />
+    </GlobalSection>
+  </div>
 </template>
 <style lang="scss" scoped>
 #soutien-aux-organisations {

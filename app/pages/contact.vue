@@ -3,8 +3,12 @@ const { getSingletonItem, getItems } = useDirectusItems();
 
 definePageMeta({
   name: 'Contact',
-  title: 'Nous joindre - Inclusion Montréal'
 });
+
+useSeoMeta({
+    author: 'Projet Inclusion',
+    title: 'Nous joindre'
+})
 
 const colors = useColors();
 const locale = useI18n();
@@ -38,11 +42,9 @@ const {
   })
 );
 const lieuxPartenairesListe = useTranslatedItems(lieuxPartenairesListeData, locale);
-
-onMounted(()=>{console.log("mounted")})
 </script>
 <template>
-  <div>
+  <div class="page-wrapper">
     <GlobalSection id="contact" :small-title="contact?.titre" :big-title="contact?.sous_titre">
       <SvgAccueilHero id="contact-svg" :color="colors.yellow" />
       <div id="contact-content">
