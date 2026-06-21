@@ -2,7 +2,11 @@ import type { RouterConfig } from '@nuxt/schema'
 
 export default <RouterConfig>{
   scrollBehavior(to, from, savedPosition) {
-    if(to.name == from.name) return false;
+    if(to.name == from.name && to.name !== 'Calendrier') return false;
+    if(to.name == 'Calendrier' && from.name == 'Calendrier') return {
+      top: 0,
+      behavior: 'smooth'
+    }
     if (savedPosition) {
       return new Promise((resolve) => {
         setTimeout(() => {

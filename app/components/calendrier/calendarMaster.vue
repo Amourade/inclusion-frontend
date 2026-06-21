@@ -25,7 +25,7 @@ const { x, y, isScrolling, arrivedState, directions, measure} = useScroll(events
 })
 const { isSwiping, direction } = usePointerSwipe(eventsWrapper, {
   threshold: 100,
-  disableTextSelect: true
+  disableTextSelect: props.compactMode ? true : false
 })
 
 // Navigation is "prepared" on pointerdown of an event and only committed on
@@ -49,7 +49,8 @@ watch(isSwiping, (swiping) => {
   }
 })
 
-const query = useRoute().query
+const route = useRoute()
+const query = route.query
 const parsedQueryYear = parseInt(query.year as string)
 const parsedQueryMonth = parseInt(query.month as string)
 const parsedQueryId = parseInt(query.id as string)
@@ -148,14 +149,25 @@ const activeFilters = ref<number[]>([]);
 const avecInscriptionFilterActive = ref(false);
 const sansInscriptionFilterActive = ref(false);
 
-// If the query contains a `filter` key matching a real category id, toggle that filter
-if (!isNaN(parsedQueryFilter) && categories.value?.some(cat => cat.id === parsedQueryFilter)) {
-  if (activeFilters.value.includes(parsedQueryFilter)) {
-    activeFilters.value = activeFilters.value.filter(id => id !== parsedQueryFilter);
-  } else {
-    activeFilters.value.push(parsedQueryFilter);
+// Reset every filter and apply only the category id present in the query string
+// (mirrors the state the component would have on a fresh mount).
+const applyQueryFilter = (filterValue: number) => {
+  activeFilters.value = [];
+  avecInscriptionFilterActive.value = false;
+  sansInscriptionFilterActive.value = false;
+
+  // If the query contains a `filter` key matching a real category id, apply it
+  if (!isNaN(filterValue) && categories.value?.some(cat => cat.id === filterValue)) {
+    activeFilters.value = [filterValue];
   }
 }
+
+// When the `filter` query param changes (e.g. navigating to the calendar from
+// another page with a different category), reset all filters and apply only the
+// one now in the query string — as if the component had just mounted.
+watch(() => route.query.filter, (newFilter) => {
+  applyQueryFilter(parseInt(newFilter as string));
+}, {immediate: true});
 
 function previousMonth() {
   if (displayMonth.value === 1) {
