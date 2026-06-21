@@ -46,6 +46,18 @@ const Accueil = useTranslatedItem(AccueilData, locale);
 
     flex-grow: 1;
 
+    padding: 50px 0px;
+
+    @media screen and (max-width: $medium-breakpoint) {
+        font-size: 1.5rem;
+        padding: 40px 0px;
+    }
+
+    @media screen and (max-width: $small-breakpoint) {
+        font-size: 1.25rem;
+        padding: 30px 0px;
+    }
+
     p {
         font-size: 2rem;
         line-height: 120%;

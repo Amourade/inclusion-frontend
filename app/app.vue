@@ -1,5 +1,8 @@
 <script setup lang="ts">
 const showTransitionScreen = ref(true);
+const transitionIndex = ref(0);
+const transitions = ['one', 'two', 'three', 'four']
+let usedTransitions: number[] = []
 const route = useRoute()
 
 useHead({
@@ -10,16 +13,33 @@ useHead({
 })
 
 onMounted(() => {
+  showRandomTransition();
+
   showTransitionScreen.value = false;
 })
+
+const showRandomTransition = () => {
+  let newTransition: number
+
+  if(usedTransitions.length === 4) usedTransitions = [];
+
+  do{
+    newTransition = Math.floor(Math.random() * 4)
+  }while(usedTransitions.includes(newTransition) || newTransition == transitionIndex.value)
+  
+  transitionIndex.value = newTransition
+  usedTransitions.push(transitionIndex.value)
+
+  showTransitionScreen.value = true
+} 
 </script>
 <template>
   <div id="site-wrapper">
     <Transition name="page-transition">
-      <div id="page-transition" v-if="showTransitionScreen" />
+      <div id="page-transition" :class="[transitions[transitionIndex]]" v-if="showTransitionScreen" />
     </Transition>
     <GlobalHeader />
-    <Transition mode="out-in" :duration="750" @before-leave="showTransitionScreen = true" @before-enter="showTransitionScreen = false">
+    <Transition mode="out-in" :duration="750" @before-leave="showRandomTransition()" @before-enter="showTransitionScreen = false">
       <NuxtPage />
     </Transition>
     <GlobalFooter />
@@ -34,14 +54,32 @@ onMounted(() => {
 
 #page-transition {
   position: fixed;
-  left: 0px;
-  bottom: 0px;
   width: 100dvw;
   height: 100dvh;
   opacity: 1;
   background: $blue;
 
   z-index: 20000;
+
+  &.one{
+    left: 0px;
+    bottom: 0px;
+  }
+
+  &.two{
+    right: 0px;
+    bottom: 0px;
+  }
+
+  &.three{
+    left: 0px;
+    top: 0px;
+  }
+
+  &.four{
+    right: 0px;
+    top: 0px;
+  }
 }
 
 .page-transition-enter-active,

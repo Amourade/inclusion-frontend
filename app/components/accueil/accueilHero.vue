@@ -2,7 +2,7 @@
 const colors = useColors();
 </script>
 <template>
-    <GlobalSection>
+    <GlobalSection id="accueil-hero">
         <div>
             <SvgAccueilHeroText1 class="accueil-hero-svg-text-1" :color="colors.brown" />
             <SvgAccueilHero class="accueil-hero-svg" :color="colors.yellow" />
@@ -13,6 +13,12 @@ const colors = useColors();
 <style lang="scss" scoped>
 div{
     position: relative;
+}
+
+#accueil-hero{
+    :deep(.inner-section){
+        padding-top: 0px;
+    }
 }
 
 .accueil-hero-svg-text-1{
