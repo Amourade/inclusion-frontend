@@ -1,6 +1,6 @@
 export function useParseLink(
   link?: string
-): ComputedRef<{ path?: string; hash?: string, href?: string, target?: string }> {
+): ComputedRef<{ path?: string; hash?: string, href?: string, target?: string, query?: {[key:string]: string} }> {
   return computed(() => {
     const router = useRouter()
     const knownRoutes = router.getRoutes()
@@ -12,6 +12,7 @@ export function useParseLink(
 
     let path: string | undefined
     let hash: string | undefined
+    let query: {[key:string]: string} = {}
 
     // Check if it's a full URL
     if (href.startsWith('http://') || href.startsWith('https://')) {
@@ -33,11 +34,25 @@ export function useParseLink(
     } else {
         // Relative path
         const hashIndex = href.indexOf('#')
+        let rawQuery: string = ""
         if (hashIndex !== -1) {
             hash = href.slice(hashIndex)
-            path = href.slice(0, hashIndex).split('?')[0]
+            const splitPath = href.slice(0, hashIndex).split('?')
+            path = splitPath[0]
+            if(splitPath[1]) rawQuery = splitPath[1]
         } else {
-            path = href.split('?')[0]
+            const splitPath = href.split("?")
+            path = splitPath[0]
+            hash = ""
+            if(splitPath[1]) rawQuery = splitPath[1]
+        }
+
+        if(rawQuery){
+            const queryArguments = rawQuery.split("&")
+            queryArguments.forEach((arg) => {
+                const keyValueArray: string[] = arg.split("=")
+                if(keyValueArray[0] && keyValueArray[1]) query[keyValueArray[0]] = keyValueArray[1]
+            })
         }
     }
 
@@ -46,7 +61,7 @@ export function useParseLink(
     }
 
     if (knownRoutes?.includes(path)) {
-        return { path, hash, target: '_self' }
+        return { path, hash, target: '_self', query }
     } else {
         return { path: href, target: '_blank' }
     }
