@@ -25,6 +25,12 @@ const date = computed(() => {
     }
 })
 
+const lienInscriptionMailto = computed(() => {
+    const lien = props.event.lien_dinscription
+    if(!lien) return lien
+    return lien.startsWith('mailto:') ? lien : `mailto:${lien}`
+})
+
 const goToEvent = () => {
     if(!props.compact) return;
 
@@ -65,7 +71,7 @@ const endTimeArray = props.event.heure_fin ? props.event.heure_fin.split(':') : 
         <template v-if="event.inscription_requise && event.lien_dinscription && !compact">
             <template v-if="!event.complet">
                 <GlobalRoundButton>
-                    <NuxtLink class="round-content-button" :href="event.lien_dinscription">
+                    <NuxtLink class="round-content-button" :href="lienInscriptionMailto">
                         <span>{{ event.lien_inscription_libelle }}</span>
                         <SvgShortDiagArrow :color="colors['light-grey']" />
                     </NuxtLink>
