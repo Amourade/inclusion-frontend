@@ -7,8 +7,6 @@ const emits = defineEmits<{
     (e: 'active', value: boolean): void
 }>()
 const parsedLink = useParseLink(props.link)
-
-console.log(parsedLink.value)
 </script>
 <template>
     <NuxtLink :to="parsedLink" :external="parsedLink.target === '_blank'" :target="parsedLink.target" :class="{ external: parsedLink.target === '_blank' }">
