@@ -6,7 +6,7 @@ const props = defineProps<{
 const parsedLink = useParseLink(props.link)
 </script>
 <template>
-    <NuxtLink :to="parsedLink">
+    <NuxtLink :to="parsedLink" :external="parsedLink.target === '_blank'" :target="parsedLink.target">
         <slot />
     </NuxtLink>
 </template>

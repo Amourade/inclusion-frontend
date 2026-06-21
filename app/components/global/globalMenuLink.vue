@@ -7,9 +7,11 @@ const emits = defineEmits<{
     (e: 'active', value: boolean): void
 }>()
 const parsedLink = useParseLink(props.link)
+
+console.log(parsedLink.value)
 </script>
 <template>
-    <NuxtLink :to="parsedLink" :class="{ external: parsedLink.target === '_blank' }">
+    <NuxtLink :to="parsedLink" :external="parsedLink.target === '_blank'" :target="parsedLink.target" :class="{ external: parsedLink.target === '_blank' }">
         <slot />
         <SvgDownArrow v-if="parsedLink.target === '_blank'" class="menu-arrow" :color="color" />
     </NuxtLink>

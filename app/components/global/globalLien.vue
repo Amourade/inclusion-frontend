@@ -32,7 +32,6 @@ const playHoverAnimation = () => {
 
 const cancelClickIfNoDestination = (e: PointerEvent) => {
     if (parsedLink.value.href == '#') { 
-        console.log("yo");
         e.preventDefault() 
     }
 }
@@ -47,7 +46,7 @@ const cancelClickIfNoDestination = (e: PointerEvent) => {
         </a>
     </template>
     <template v-else>
-        <NuxtLink @click.prevent="cancelClickIfNoDestination" :to="parsedLink" @pointerenter="playHoverAnimation" :class="[{ animate }, animation]">
+        <NuxtLink @click.prevent="cancelClickIfNoDestination" :to="parsedLink" :external="parsedLink.target === '_blank'" :target="parsedLink.target"  @pointerenter="playHoverAnimation" :class="[{ animate }, animation]">
             <span class="icon" :style="{ backgroundColor: color ? color : colors.brown }">
                 <slot name="icon" />
             </span>

@@ -8,7 +8,7 @@ export function useParseLink(
         .map(r => r.path)
 
     const href = link
-    if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return { href }
+    if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return { path: href }
 
     let path: string | undefined
     let hash: string | undefined
@@ -21,14 +21,14 @@ export function useParseLink(
 
             // If not same origin, let the browser handle it normally
             if (url.origin !== currentOrigin) {
-                return {href, target: '_blank'}
+                return {path: href, target: '_blank'}
             }
 
             // Extract path from same-origin URL
             path = url.pathname
             hash = url.hash
         } catch {
-            return { href, target: '_blank' } // Invalid URL, let browser handle
+            return { path: href, target: '_blank' } // Invalid URL, let browser handle
         }
     } else {
         // Relative path
@@ -42,13 +42,13 @@ export function useParseLink(
     }
 
     if (!path) {
-        return { href, target: '_blank' }
+        return { path: href, target: '_blank' }
     }
 
     if (knownRoutes?.includes(path)) {
         return { path, hash, target: '_self' }
     } else {
-        return { href, target: '_blank' }
+        return { path: href, target: '_blank' }
     }
 });
 }
