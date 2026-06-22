@@ -18,14 +18,14 @@ export default <RouterConfig>{
         }, 1000) // Small delay for DOM to update
       })
     }
-    
-    if (savedPosition) {
+
+    /* if (savedPosition) {
       return new Promise((resolve) => {
         setTimeout(() => {
           resolve(savedPosition)
         }, 750) // Small delay for DOM to update
       })
-    }
+    } */
 
     // Quick fix, don't scroll to top if there's an id in the query string
     // It's because the page will consume the id to scroll somewhere
