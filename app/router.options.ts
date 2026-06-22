@@ -22,7 +22,7 @@ export default <RouterConfig>{
             el: to.hash,
             behavior: 'smooth'
           })
-        }, 752) // Small delay for DOM to update
+        }, 850) // Small delay for DOM to update
       })
     }
 
