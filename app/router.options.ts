@@ -7,13 +7,6 @@ export default <RouterConfig>{
       top: 0,
       behavior: 'smooth'
     }
-    if (savedPosition) {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(savedPosition)
-        }, 750) // Small delay for DOM to update
-      })
-    }
     
     if (to.hash) {
       return new Promise((resolve) => {
@@ -22,7 +15,15 @@ export default <RouterConfig>{
             el: to.hash,
             behavior: 'smooth'
           })
-        }, 850) // Small delay for DOM to update
+        }, 1000) // Small delay for DOM to update
+      })
+    }
+    
+    if (savedPosition) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(savedPosition)
+        }, 750) // Small delay for DOM to update
       })
     }
 
