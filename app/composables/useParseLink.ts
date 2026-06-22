@@ -62,7 +62,7 @@ export function useParseLink(
     }
 
     if (knownRoutes?.includes(path)) {
-        return { path, hash, target: '_self', query }
+        return { path, hash, query }
     } else {
         return href
     }
