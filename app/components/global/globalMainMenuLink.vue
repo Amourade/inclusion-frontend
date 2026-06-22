@@ -69,14 +69,13 @@ const playHoverAnimation = (e: PointerEvent) => {
                         }
                     }
                 }
-                
-                &.submenu-active {
-                    border-color: $black;
+            }
+        }
+        &.submenu-active {
+            border-color: $black;
 
-                    @media screen and (max-width: $small-breakpoint){
-                        border-color: $brown;
-                    }
-                }
+            @media screen and (max-width: $small-breakpoint){
+                border-color: $brown;
             }
         }
     }

@@ -28,7 +28,7 @@ const { pause, resume, isActive } = useIntervalFn(() => {
         const link = children[i]?.getElementsByTagName('a')[0];
         if(link?.classList.contains('router-link-exact-active')) activeChildren++;
     }
-
+    
     activeChildren > 0 ? submenuHasActiveLinks.value = true : submenuHasActiveLinks.value = false;
 }, 250, {
     immediate: false
