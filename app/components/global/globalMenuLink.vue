@@ -9,9 +9,9 @@ const emits = defineEmits<{
 const parsedLink = useParseLink(props.link)
 </script>
 <template>
-    <NuxtLink :to="parsedLink" :external="parsedLink.target === '_blank'" :target="parsedLink.target" :class="{ external: parsedLink.target === '_blank' }">
+    <NuxtLink :to="parsedLink" :external="typeof parsedLink == 'string'" :target="typeof parsedLink == 'string' ? '_blank' : '_self'" :class="{ external: typeof parsedLink == 'string' && parsedLink !== '#' }">
         <slot />
-        <SvgDownArrow v-if="parsedLink.target === '_blank'" class="menu-arrow" :color="color" />
+        <SvgDownArrow v-if="typeof parsedLink == 'string' && parsedLink !== '#'" class="menu-arrow" :color="color" />
     </NuxtLink>
 </template>
 <style lang="scss" scoped>

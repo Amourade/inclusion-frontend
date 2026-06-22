@@ -1,6 +1,6 @@
 export function useParseLink(
   link?: string
-): ComputedRef<{ path?: string; hash?: string, href?: string, target?: string, query?: {[key:string]: string} }> {
+): ComputedRef<{ path?: string; hash?: string, href?: string, target?: string, query?: {[key:string]: string} } | string> {
   return computed(() => {
     const router = useRouter()
     const knownRoutes = router.getRoutes()
@@ -8,7 +8,8 @@ export function useParseLink(
         .map(r => r.path)
 
     const href = link
-    if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return { path: href }
+    if(!href) return "#"
+    if (href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return href
 
     let path: string | undefined
     let hash: string | undefined
@@ -22,14 +23,14 @@ export function useParseLink(
 
             // If not same origin, let the browser handle it normally
             if (url.origin !== currentOrigin) {
-                return {path: href, target: '_blank'}
+                return href
             }
 
             // Extract path from same-origin URL
             path = url.pathname
             hash = url.hash
         } catch {
-            return { path: href, target: '_blank' } // Invalid URL, let browser handle
+            return href // Invalid URL, let browser handle
         }
     } else {
         // Relative path
@@ -57,13 +58,13 @@ export function useParseLink(
     }
 
     if (!path) {
-        return { path: href, target: '_blank' }
+        return href
     }
 
     if (knownRoutes?.includes(path)) {
         return { path, hash, target: '_self', query }
     } else {
-        return { path: href, target: '_blank' }
+        return href
     }
 });
 }

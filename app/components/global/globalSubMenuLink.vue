@@ -36,6 +36,10 @@ const playHoverAnimation = () => {
 
     &.router-link-active {
         text-decoration: underline;
+
+        :deep(.text){
+            text-decoration: underline;
+        }
     }
 
     :deep(.text){

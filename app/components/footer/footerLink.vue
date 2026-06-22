@@ -7,7 +7,7 @@ const parsedLink = useParseLink(props.link)
 
 </script>
 <template>
-    <NuxtLink :to="{...parsedLink, force: true}" :external="parsedLink.target === '_blank'" :target="parsedLink.target">
+    <NuxtLink :to="parsedLink" :external="typeof parsedLink == 'string'" :target="typeof parsedLink == 'string' && parsedLink !== '#' ? '_blank' : '_self'">
         <slot />
     </NuxtLink>
 </template>

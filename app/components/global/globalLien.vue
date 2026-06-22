@@ -31,14 +31,14 @@ const playHoverAnimation = () => {
 }
 
 const cancelClickIfNoDestination = (e: PointerEvent) => {
-    if (parsedLink.value.href == '#') { 
+    if (parsedLink.value == '#') { 
         e.preventDefault() 
     }
 }
 </script>
 <template>
-    <template v-if="parsedLink.href == '#'">
-        <a @click.prevent="cancelClickIfNoDestination" :href="parsedLink.href" @pointerenter="playHoverAnimation" :class="[{ animate }, animation]">
+    <template v-if="parsedLink == '#'">
+        <a @click.prevent="cancelClickIfNoDestination" :href="parsedLink" @pointerenter="playHoverAnimation" :class="[{ animate }, animation]">
             <span class="icon" :style="{ backgroundColor: color ? color : colors.brown }">
                 <slot name="icon" />
             </span>
@@ -46,7 +46,7 @@ const cancelClickIfNoDestination = (e: PointerEvent) => {
         </a>
     </template>
     <template v-else>
-        <NuxtLink @click.prevent="cancelClickIfNoDestination" :to="parsedLink" :external="parsedLink.target === '_blank'" :target="parsedLink.target"  @pointerenter="playHoverAnimation" :class="[{ animate }, animation]">
+        <NuxtLink :to="parsedLink" :external="typeof parsedLink == 'string'" :target="typeof parsedLink == 'string' ? '_blank' : '_self'"  @pointerenter="playHoverAnimation" :class="[{ animate }, animation]">
             <span class="icon" :style="{ backgroundColor: color ? color : colors.brown }">
                 <slot name="icon" />
             </span>
