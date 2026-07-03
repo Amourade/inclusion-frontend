@@ -246,6 +246,15 @@ li{
     }
 }
 
+@keyframes scroll-top-link-svg-hover-animation{
+    0%, 100% {
+        top: 0px;
+    }
+    50% {
+        top: -3px;
+    }
+}
+
 @keyframes global-link-svg-hover-animation{
     0%, 100% {
         transform: translate(0, 0);

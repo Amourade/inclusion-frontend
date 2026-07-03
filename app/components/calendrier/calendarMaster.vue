@@ -541,6 +541,8 @@ onUnmounted(() => {
       pointer-events: auto;
       opacity: 1;
 
+      color: $light-black!important;
+
       font-weight: 600;
       font-size: .75rem;
       padding: .25rem .5rem;

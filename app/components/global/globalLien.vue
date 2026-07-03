@@ -72,6 +72,12 @@ a {
                 animation-iteration-count: 1;
             }
         }
+        &.arrow-up {
+            :deep(svg) {
+                animation: scroll-top-link-svg-hover-animation .5s ease-in-out;
+                animation-iteration-count: 1;
+            }
+        }
     }
 
     &:not(.no-text)::before {

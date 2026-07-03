@@ -58,6 +58,18 @@ const showBio = ref(false);
     overflow: hidden;
 
     min-height: 526px;
+
+    @media screen and (max-width: $medium-breakpoint) {
+      min-height: 450px;
+        padding-top: 5rem;
+        padding-bottom: 5rem;
+    }
+
+    @media screen and (max-width: $small-breakpoint) {
+      min-height: 400px;
+        padding-top: 4rem;
+        padding-bottom: 4rem;
+    }
 }
 
 .bio{

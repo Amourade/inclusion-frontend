@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { useWindowScroll } from '@vueuse/core';
+
 const showTransitionScreen = ref(true);
 const transitionIndex = ref(0);
 const transitions = ['one', 'two', 'three', 'four']
 let usedTransitions: number[] = []
+const locale = useI18n();
 const route = useRoute()
 
 useHead({
@@ -10,6 +13,10 @@ useHead({
   titleTemplate: (titleChunk) => {
     return titleChunk ? `${titleChunk} - Projet Inclusion` : 'Projet Inclusion';
   }
+})
+
+const { x, y } = useWindowScroll({
+  behavior: 'smooth'
 })
 
 onMounted(() => {
@@ -43,6 +50,17 @@ const showRandomTransition = () => {
       <NuxtPage />
     </Transition>
     <GlobalFooter />
+    <transition name="menu-fade" mode="out-in">
+      <GlobalLien v-if="y > 200" 
+        tabindex="0"
+        :title="locale == 'fr' ? 'Défiler vers le haut' : 'Scroll to top'" 
+        :aria-description="locale == 'fr' ? 'Défiler vers le haut' : 'Scroll to top'" 
+        lien="#" id="go-up" class="no-text" 
+        @click.prevent="y = 0" 
+        :animation="'arrow-up'">
+          <template #icon><SvgArrowScrollUp class="scroll-top-arrow" /></template>
+      </GlobalLien>
+    </transition>
   </div>
 </template>
 <style lang="scss" scoped>
@@ -79,6 +97,22 @@ const showRandomTransition = () => {
   &.four{
     right: 0px;
     top: 0px;
+  }
+}
+#go-up{
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+
+  z-index: 10000;
+
+  :deep(.icon){
+    background: $very-light-orange!important;
+  }
+
+  :deep(svg){
+    fill: $brown!important;
+    stroke: $brown!important;
   }
 }
 

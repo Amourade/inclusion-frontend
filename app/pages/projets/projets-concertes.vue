@@ -132,6 +132,10 @@ const projetsListe = useTranslatedItems(projetsListeData, locale);
 
       min-height: 0px;
     }
+
+    @media screen and (max-width: $medium-breakpoint) {
+      min-height: 0px;
+    }
   }
 }
 </style>
