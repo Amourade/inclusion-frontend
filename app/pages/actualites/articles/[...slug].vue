@@ -108,12 +108,6 @@ useSeoMeta({
   @media screen and (max-width: $small-breakpoint) {
     font-size: 1.25rem;
   }
-
-  @media screen and (hover: hover){
-    &:hover{
-      color: $brown;
-    }
-  }
 }
 
 .article-image{
