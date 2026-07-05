@@ -10,6 +10,10 @@ const breakpoints = useBreakpoints(breakPointsValues.value);
 const activeBreakpoint = breakpoints.active();
 const menuRef = useTemplateRef('menuRef');
 const showMenu = ref(false);
+const route = useRoute();
+const backgroundColor = computed(()=>{
+    return route.path.includes('actualites') ? colors.value.white : 'transparent'
+})
 
 const toggleMenu = () => {
     showMenu.value = !showMenu.value;
@@ -51,48 +55,56 @@ const {
 const lienMenuDessusData = useTranslatedItems(lienMenuDessusDataRaw, locale);
 </script>
 <template>
-    <header id="header">
-        <div id="logo">
-            <h1>
-                <NuxtLink :to="{ name: 'index' }">
-                    <SvgMainLogo />
-                </NuxtLink>
-            </h1>
-        </div>
-        <nav id="menu" ref="menuRef">
-            <button id="menu-button" :class="{ 'open': showMenu }" v-if="activeBreakpoint == 'small'"
-                @click.prevent="toggleMenu">
-                <span>Menu</span>
-                <SvgDownArrow class="menu-arrow" :color="colors['orange']" />
-            </button>
-            <Transition name="menu-fade">
-                <div id="inner-menu" v-show="activeBreakpoint == 'small' && showMenu || activeBreakpoint != 'small'">
-                    <ul>
-                        <HeaderMainMenuLink v-for="item in lienMenuData" :key="item.id" :link="item"
-                            @closeMenu="showMenu = false" />
-                        <!-- <li v-if="locale !== 'en'">
-                            <GlobalMainMenuLink link="#" @click.prevent="setLocale('en'); showMenu = false"><span>en</span></GlobalMainMenuLink>
-                        </li>
-                        <li v-if="locale !== 'fr'">
-                            <GlobalMainMenuLink link="#" @click.prevent="setLocale('fr'); showMenu = false"><span>fr</span></GlobalMainMenuLink>
-                        </li> -->
-                    </ul>
-                    <ul class="top-buttons" v-if="lienMenuDessusData && lienMenuDessusData.length > 0">
-                        <li v-for="item in lienMenuDessusData" :key="item.id">
-                            <GlobalMainMenuLink :color="colors.orange" :link="item.lien" class="top-link"
-                                @click="showMenu = false">
-                                <span class="text">{{ item.libelle }}</span>
-                            </GlobalMainMenuLink>
-                        </li>
-                    </ul>
-                </div>
-            </Transition>
-        </nav>
-    </header>
+    <div id="header-wrapper" :style="{backgroundColor}">
+        <header id="header">
+            <div id="logo">
+                <h1>
+                    <NuxtLink :to="{ name: 'index' }">
+                        <SvgMainLogo />
+                    </NuxtLink>
+                </h1>
+            </div>
+            <nav id="menu" ref="menuRef">
+                <button id="menu-button" :class="{ 'open': showMenu }" v-if="activeBreakpoint == 'small'"
+                    @click.prevent="toggleMenu">
+                    <span>Menu</span>
+                    <SvgDownArrow class="menu-arrow" :color="colors['orange']" />
+                </button>
+                <Transition name="menu-fade">
+                    <div id="inner-menu" v-show="activeBreakpoint == 'small' && showMenu || activeBreakpoint != 'small'">
+                        <ul>
+                            <HeaderMainMenuLink v-for="item in lienMenuData" :key="item.id" :link="item"
+                                @closeMenu="showMenu = false" />
+                            <!-- <li v-if="locale !== 'en'">
+                                <GlobalMainMenuLink link="#" @click.prevent="setLocale('en'); showMenu = false"><span>en</span></GlobalMainMenuLink>
+                            </li>
+                            <li v-if="locale !== 'fr'">
+                                <GlobalMainMenuLink link="#" @click.prevent="setLocale('fr'); showMenu = false"><span>fr</span></GlobalMainMenuLink>
+                            </li> -->
+                        </ul>
+                        <ul class="top-buttons" v-if="lienMenuDessusData && lienMenuDessusData.length > 0">
+                            <li v-for="item in lienMenuDessusData" :key="item.id">
+                                <GlobalMainMenuLink :color="colors.orange" :link="item.lien" class="top-link"
+                                    @click="showMenu = false">
+                                    <span class="text">{{ item.libelle }}</span>
+                                </GlobalMainMenuLink>
+                            </li>
+                        </ul>
+                    </div>
+                </Transition>
+            </nav>
+        </header>
+    </div>
 </template>
 <style lang="scss" scoped>
-header {
+#header-wrapper{
     //background-color: $white;
+    width: 100%;
+
+    transition: background-color 1s ease-in-out;
+}
+
+header {
     width: 100%;
 
     max-width: $large-breakpoint;

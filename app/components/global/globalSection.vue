@@ -15,7 +15,6 @@ const props = defineProps<{
 </template>
 <style lang="scss" scoped>
 .section{
-
     position: relative;
 
     h2{

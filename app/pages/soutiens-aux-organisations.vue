@@ -5,11 +5,6 @@ definePageMeta({
   name: 'SoutienAuxOrganisations',
 });
 
-useSeoMeta({
-    author: 'Projet Inclusion',
-    title: 'Soutient aux organisations'
-})
-
 const colors = useColors();
 const locale = useI18n();
 
@@ -26,6 +21,7 @@ const {
     }
   })
 );
+
 const soutienAuxOrganisations = useTranslatedItem(soutienAuxOrganisationsData, locale);
 
 const {
@@ -41,7 +37,15 @@ const {
     }
   })
 );
+
 const ideesThemesListe = useTranslatedItems(ideesThemesListeRaw, locale);
+
+useSeoMeta({
+    author: 'Projet Inclusion',
+    title: soutienAuxOrganisations.value?.titre,
+    ogTitle: soutienAuxOrganisations.value?.titre,
+    ogDescription: soutienAuxOrganisations.value?.texte_intro,
+})
 </script>
 <template>
   <div class="page-wrapper">

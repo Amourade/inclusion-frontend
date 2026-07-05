@@ -5,11 +5,6 @@ definePageMeta({
   name: 'Simpliquer',
 });
 
-useSeoMeta({
-    author: 'Projet Inclusion',
-    title: 'S\'impliquer'
-})
-
 const colors = useColors();
 const locale = useI18n();
 
@@ -48,6 +43,13 @@ const spanifiedStaggerdSimpliquerTitle = computed(() => {
   if (!simpliquer.value?.sous_titre) return '';
 
   return simpliquer.value?.sous_titre.split('\n').map(word => `<span>${word}</span>`).join('')
+})
+
+useSeoMeta({
+    author: 'Projet Inclusion',
+    title: simpliquer.value?.titre,
+    ogTitle: simpliquer.value?.titre,
+    ogDescription: simpliquer.value?.texte,
 })
 </script>
 <template>

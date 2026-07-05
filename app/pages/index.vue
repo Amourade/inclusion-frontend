@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import CalendarMaster from '~/components/calendrier/calendarMaster.vue';
 
-const { getSingletonItem } = useDirectusItems();
-
 definePageMeta({
     name: 'index'
 });
 
+const { getSingletonItem } = useDirectusItems();
 const locale = useI18n();
 
 const {
@@ -22,7 +21,15 @@ const {
     }
   })
 );
+
 const Accueil = useTranslatedItem(AccueilData, locale);
+
+useSeoMeta({
+    author: 'Projet Inclusion',
+    title: locale.value == ' fr' ? 'Accueil' : 'Home',
+    ogTitle: `${locale.value == 'fr' ? 'Accueil' : 'Home'}Projet Inclusion`,
+    ogDescription: Accueil.value?.intro_texte,
+})
 </script>
 <template>
     <div class="page-wrapper">

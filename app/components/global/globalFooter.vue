@@ -81,10 +81,10 @@ const footerGroupeLiens = useTranslatedItems(footerGroupeLienData, locale);
             <section class="bottom">
                 <p>{{ footer?.copyright }}</p>
                 <p>
-                    <FooterLink :link="footer?.politique_confidentialite_lien" @click.prevent="">{{ footer?.politique_confidentialie_libelle }}</FooterLink>
+                    <FooterLink :link="footer?.politique_confidentialite_lien">{{ footer?.politique_confidentialie_libelle }}</FooterLink>
                 </p>
                 <p>
-                    <FooterLink :link="footer?.politique_confidentialite_lien" @click.prevent="">{{ footer?.conditions_generales_libelle }}</FooterLink>
+                    <FooterLink :link="footer?.politique_confidentialite_lien">{{ footer?.conditions_generales_libelle }}</FooterLink>
                 </p>
             </section>
         </div>
@@ -106,12 +106,10 @@ footer {
 
     @media screen and (max-width: $medium-breakpoint) {
         padding: $content-block-padding-medium;
-        //padding-bottom: 30px;
     }
 
     @media screen and (max-width: $small-breakpoint) {
         padding: $content-block-padding-small;
-        //padding-bottom: 20px;
     }
 }
 

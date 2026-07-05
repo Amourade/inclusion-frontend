@@ -246,6 +246,14 @@ interface Calendrier {
   translations?: Calendrier[];
 }
 
+interface GenericListingPage{
+  id?: string | number;
+  languages_code?: string;
+  titre: string;
+  texte: string;
+  translations?: GenericListingPage[];
+}
+
 interface Calendrier {
   id?: string | number;
   languages_code?: string;
@@ -277,6 +285,53 @@ interface Evenement {
   heure_debut: string;
   heure_fin: string;
   translations?: Evenement[];
+}
+
+interface Article{
+  id?: string | number;
+  languages_code?: string;
+  status: PostStatus;
+  slug: string,
+  user_created: any;
+  date_created: string;
+  titre: string;
+  intro: string;
+  image: string;
+  texte: string;
+  translations?: Article[];
+}
+
+interface Galerie{
+  id?: string | number;
+  languages_code?: string;
+  date_created: string;
+  titre: string;
+  texte: string;
+  images: any[];
+  translations?: Galerie[];
+}
+
+interface Rapport{
+  id?: string | number;
+  languages_code?: string;
+  date_created: string;
+  fichier: string;
+  titre: string;
+  image: string;
+  translations?: Rapport[];
+}
+
+interface Publication{
+  id?: string | number;
+  languages_code?: string;
+  sort: int;
+  titre: string;
+  description: string;
+  lien_libelle?: string;
+  lien?: string;
+  lien_fichier?: string;
+  html?: string;
+  translations?: Publication[];
 }
 
 interface EvenementCategorieAssociation {

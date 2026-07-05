@@ -5,11 +5,6 @@ definePageMeta({
   name: 'Contact',
 });
 
-useSeoMeta({
-    author: 'Projet Inclusion',
-    title: 'Nous joindre'
-})
-
 const colors = useColors();
 const locale = useI18n();
 
@@ -42,6 +37,13 @@ const {
   })
 );
 const lieuxPartenairesListe = useTranslatedItems(lieuxPartenairesListeData, locale);
+
+useSeoMeta({
+    author: 'Projet Inclusion',
+    title: contact.value?.titre,
+    ogTitle: contact.value?.titre,
+    ogDescription: contact.value?.texte,
+})
 </script>
 <template>
   <div class="page-wrapper">
