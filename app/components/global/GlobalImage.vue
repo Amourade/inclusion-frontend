@@ -22,7 +22,8 @@ const props = defineProps({
    }
 })
 
-const { isReady } = useImage({ src: props.image })
+// Pass a getter so useImage re-tracks when the src changes and resets isReady
+const { isReady } = useImage(() => ({ src: props.image }))
 const { x, y } = useMouse();
 const {width} = useWindowSize();
 const imageHover = ref(false);
@@ -56,6 +57,7 @@ const titlePositionStyle = computed(()=>{
     user-select: none;
 
     color: $brown;
+    $background-color: $light-grey;
 
     &.cover{
         background: $very-light-orange;
