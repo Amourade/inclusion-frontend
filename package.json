@@ -6,12 +6,15 @@
     "build": "nuxt build",
     "dev": "cross-env NODE_OPTIONS=\"--use-openssl-ca\" NODE_EXTRA_CA_CERTS=\"%USERPROFILE%\\AppData\\Local\\mkcert\\rootCA.pem\" nuxt dev",
     "generate": "nuxt generate",
+    "generate:local": "cross-env NODE_OPTIONS=\"--use-openssl-ca\" NODE_EXTRA_CA_CERTS=\"%USERPROFILE%\\AppData\\Local\\mkcert\\rootCA.pem\" nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
     "@directus/sdk": "^21.3.0",
     "@nuxtjs/i18n": "^10.4.0",
+    "@nuxtjs/robots": "^6.1.2",
+    "@nuxtjs/sitemap": "^8.2.2",
     "@vueuse/core": "^14.3.0",
     "nuxt": "^4.4.4",
     "nuxt-directus": "^5.7.0",

@@ -26,8 +26,8 @@ const Accueil = useTranslatedItem(AccueilData, locale);
 
 useSeoMeta({
     author: 'Projet Inclusion',
-    title: locale.value == ' fr' ? 'Accueil' : 'Home',
-    ogTitle: `${locale.value == 'fr' ? 'Accueil' : 'Home'}Projet Inclusion`,
+    title: locale.value == 'fr' ? 'Accueil' : 'Home',
+    ogTitle: `${locale.value == 'fr' ? 'Accueil' : 'Home'} Projet Inclusion`,
     ogDescription: Accueil.value?.intro_texte,
 })
 </script>

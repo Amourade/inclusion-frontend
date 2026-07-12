@@ -3,12 +3,18 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   css: ['~/assets/styles/main.scss'],
   devtools: { enabled: true },
-  modules: ['nuxt-directus'/* , '@nuxtjs/i18n' */],
+  modules: ['nuxt-directus'/* , '@nuxtjs/i18n' */, '@nuxtjs/sitemap', '@nuxtjs/robots'],
+  // Absolute base URL used by @nuxtjs/sitemap (for <loc>) and @nuxtjs/robots
+  // (for the Sitemap: line). Required at build time by `nuxt generate`.
+  site: {
+    url: process.env.NUXT_PUBLIC_SITE_URL || process.env.NUXT_PUBLIC_DOMAIN,
+    name: process.env.NUXT_PUBLIC_SITE_NAME || process.env.NUXT_SITE_NAME
+  },
   runtimeConfig: {
     public: {
       directus: {
       },
-      domain: process.env.NUXT_PUBLIC_CURRENT_DOMAIN
+      domain: process.env.NUXT_PUBLIC_DOMAIN
     }
   },
   /* i18n: {
@@ -44,7 +50,12 @@ export default defineNuxtConfig({
   },
   nitro: {
     prerender: {
-      interval: 200,
+      crawlLinks: true,
+      // Seed routes: entry points the crawler starts from.
+      // '/actualites/articles' lists every published article, so the
+      // crawler discovers each /actualites/articles/{slug} page from there.
+      routes: ['/', '/actualites/articles'],
+      interval: 5,
       concurrency: 1
     }
   }
