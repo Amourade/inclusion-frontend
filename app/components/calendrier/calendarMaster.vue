@@ -261,8 +261,8 @@ watch([evenementsPending, mounted], (newVal) => {
       if (eventElement && !initialScrollAtDone) {
         setTimeout(() => {
           const eventElement = document.getElementById(parsedQueryId.toString());
-          eventElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 1000);
+          eventElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 2000);
         initialScrollAtDone = true;
       }
     });
