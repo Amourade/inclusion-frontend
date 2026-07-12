@@ -262,7 +262,7 @@ watch([evenementsPending, mounted], (newVal) => {
         setTimeout(() => {
           const eventElement = document.getElementById(parsedQueryId.toString());
           eventElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 300);
+        }, 1000);
         initialScrollAtDone = true;
       }
     });
