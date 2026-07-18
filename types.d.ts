@@ -234,6 +234,7 @@ interface Footer {
   politique_confidentialite_lien: string;
   conditions_generales_libelle: string;
   conditions_generales_lien: string;
+  realise_par: string;
   translations?: Footer[];
 }
 

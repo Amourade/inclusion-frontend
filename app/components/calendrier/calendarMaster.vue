@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useBreakpoints, useDateFormat, useNow, useMounted, useTemplateRefsList, useScroll, usePointerSwipe } from '@vueuse/core';
+import { useBreakpoints, useDateFormat, useNow, useMounted, useTemplateRefsList, useScroll, usePointerSwipe, useInterval, useIntervalFn } from '@vueuse/core';
 import CalendarEvent from '~/components/calendrier/calendarEvent.vue';
 import CalendarWidget from '~/components/calendrier/calendarWidget.vue';
 const { getSingletonItem, getItems } = useDirectusItems();
@@ -27,6 +27,7 @@ const { isSwiping, direction } = usePointerSwipe(eventsWrapper, {
   threshold: 100,
   disableTextSelect: props.compactMode ? true : false
 })
+useIntervalFn(measure,1000)
 
 // Navigation is "prepared" on pointerdown of an event and only committed on
 // pointerup if no swipe happened during the gesture. This lets the user swipe
@@ -59,8 +60,25 @@ let initialScrollAtDone = false;
 
 let left = 0;
 
-const displayYear = ref(parsedQueryYear ? parsedQueryYear : parseInt(nowYear.value))
-const displayMonth = ref(parsedQueryMonth ? parsedQueryMonth : parseInt(nowMonth.value));
+// Navigation is restricted to the current month and the next month.
+const currentMonth = parseInt(nowMonth.value);
+const currentYear = parseInt(nowYear.value);
+const nextAllowedDate = new Date(currentYear, currentMonth, 1); // JS months are 0-indexed, so this is the 1st of next month
+const nextAllowedMonth = nextAllowedDate.getMonth() + 1;
+const nextAllowedYear = nextAllowedDate.getFullYear();
+
+const isMonthAllowed = (year: number, month: number) =>
+  (year === currentYear && month === currentMonth) ||
+  (year === nextAllowedYear && month === nextAllowedMonth);
+
+// Ignore query params pointing outside the allowed range.
+const queryDateAllowed = isMonthAllowed(parsedQueryYear, parsedQueryMonth);
+
+const displayYear = ref(queryDateAllowed ? parsedQueryYear : currentYear)
+const displayMonth = ref(queryDateAllowed ? parsedQueryMonth : currentMonth);
+
+const canGoPrevious = computed(() => !(displayYear.value === currentYear && displayMonth.value === currentMonth));
+const canGoNext = computed(() => !(displayYear.value === nextAllowedYear && displayMonth.value === nextAllowedMonth));
 
 const monthNames = {
   fr: [
@@ -170,6 +188,8 @@ watch(() => route.query.filter, (newFilter) => {
 }, {immediate: true});
 
 function previousMonth() {
+  if (!canGoPrevious.value) return;
+
   if (displayMonth.value === 1) {
     displayMonth.value = 12
     displayYear.value--
@@ -179,6 +199,8 @@ function previousMonth() {
 }
 
 function nextMonth() {
+  if (!canGoNext.value) return;
+
   if (displayMonth.value === 12) {
     displayMonth.value = 1
     displayYear.value++
@@ -352,13 +374,15 @@ onUnmounted(() => {
   <GlobalSection id="calendar" :small-title="calendrier?.titre" :big-title="calendrier?.sous_titre">
     <div class="calendar-header" :class="{ compact: compactMode }">
       <div class="month-nav" v-if="activeBreakpoint !== 'small' && compactMode">
-        <button class="nav-btn previous" @click="previousMonth"
+        <button class="nav-btn previous" @click="previousMonth" :disabled="!canGoPrevious"
+          :class="{ inactive: !canGoPrevious }"
           :aria-label="locale == 'fr' ? 'Mois précédent' : 'Previous month'"
           :title="locale == 'fr' ? 'Mois précédent' : 'Previous month'">
           <SvgSideArrow :color="colors['light-black']" />
         </button>
         <span class="current-month">{{ monthName }} {{ displayYear }}</span>
-        <button class="nav-btn next" @click="nextMonth" :aria-label="locale == 'fr' ? 'Mois suivant' : 'Next month'"
+        <button class="nav-btn next" @click="nextMonth" :disabled="!canGoNext" :class="{ inactive: !canGoNext }"
+          :aria-label="locale == 'fr' ? 'Mois suivant' : 'Next month'"
           :title="locale == 'fr' ? 'Mois suivant' : 'Next month'">
           <SvgSideArrow :color="colors['light-black']" />
         </button>
@@ -402,15 +426,18 @@ onUnmounted(() => {
     <section id="calendar-body">
       <div id="calendar-widget-wrapper" v-if="activeBreakpoint == 'small' && compactMode || !compactMode">
         <CalendarWidget v-if="activeBreakpoint !== 'small'" v-model:month="displayMonth" v-model:year="displayYear"
+          :can-go-previous="canGoPrevious" :can-go-next="canGoNext"
           :events="evenementsPending ? [] : fileteredEvenements" @highlight-events="highlightEvents" />
         <div class="month-nav" v-if="activeBreakpoint == 'small'">
-          <button class="nav-btn previous" @click="previousMonth"
+          <button class="nav-btn previous" @click="previousMonth" :disabled="!canGoPrevious"
+            :class="{ inactive: !canGoPrevious }"
             :aria-label="locale == 'fr' ? 'Mois précédent' : 'Previous month'"
             :title="locale == 'fr' ? 'Mois précédent' : 'Previous month'">
             <SvgSideArrow :color="colors['light-black']" />
           </button>
           <span class="current-month">{{ monthName }} {{ displayYear }}</span>
-          <button class="nav-btn next" @click="nextMonth" :aria-label="locale == 'fr' ? 'Mois suivant' : 'Next month'"
+          <button class="nav-btn next" @click="nextMonth" :disabled="!canGoNext" :class="{ inactive: !canGoNext }"
+            :aria-label="locale == 'fr' ? 'Mois suivant' : 'Next month'"
             :title="locale == 'fr' ? 'Mois suivant' : 'Next month'">
             <SvgSideArrow :color="colors['light-black']" />
           </button>
@@ -435,7 +462,7 @@ onUnmounted(() => {
             <CalendarEvent v-for="evenement in fileteredEvenements" ref="eventsRefs" :key="evenement.id"
               :event="evenement" :compact="compactMode" :categories="categories" @go-to-event="prepareNavigateToEvent" />
           </div>
-          <p v-else class="no-events">{{ calendrier?.pas_devenements_message }}</p>
+          <p ref="eventsWrapperRef" v-else class="no-events">{{ calendrier?.pas_devenements_message }}</p>
         </div>
       </Transition>
     </section>

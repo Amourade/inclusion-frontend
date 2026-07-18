@@ -86,6 +86,7 @@ const footerGroupeLiens = useTranslatedItems(footerGroupeLienData, locale);
                 <p>
                     <FooterLink :link="footer?.politique_confidentialite_lien">{{ footer?.conditions_generales_libelle }}</FooterLink>
                 </p>
+                <div class="realise-par" v-if="footer?.realise_par" v-html="footer.realise_par" />
             </section>
         </div>
     </footer>
@@ -240,5 +241,41 @@ footer {
     flex-direction: row;
     flex-wrap: wrap;
     gap: 1rem 3rem;
+
+    padding-right: 2rem;
+
+    .realise-par{
+        flex-grow: 1;
+        text-align-last: end;
+    }
+
+    @media screen and (max-width: $medium-breakpoint){
+        padding-right: 3rem;
+    }
+
+    :deep(a){
+
+        display: inline-block;
+        position: relative;
+    
+        &:before{
+            content: "";
+            position: absolute;
+            bottom: 1px;
+            left: 1px;
+            height: 1px;
+            width: 0%;
+            background-color: $white;
+
+            transition: width .5s ease-in-out;
+        }
+
+        @media screen and (hover: hover){
+            &:hover:before{
+                width: 100%;
+            }
+        }
+    }
+
 }
 </style>

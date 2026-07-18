@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   css: ['~/assets/styles/main.scss'],
-  devtools: { enabled: true },
+  devtools: { enabled: false },
   modules: ['nuxt-directus'/* , '@nuxtjs/i18n' */, '@nuxtjs/sitemap', '@nuxtjs/robots'],
   // Absolute base URL used by @nuxtjs/sitemap (for <loc>) and @nuxtjs/robots
   // (for the Sitemap: line). Required at build time by `nuxt generate`.

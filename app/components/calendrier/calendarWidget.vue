@@ -5,10 +5,15 @@ interface Props {
   year: number
   month: number // 1-indexed (1 = January, 12 = December)
   events?: Array<Evenement>
+  canGoPrevious?: boolean
+  canGoNext?: boolean
 }
 
 const colors = useColors();
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  canGoPrevious: true,
+  canGoNext: true,
+})
 const locale = useI18n()
 
 const emit = defineEmits<{
@@ -108,6 +113,8 @@ const calendarDays = computed<CalendarDay[]>(() => {
 })
 
 function previousMonth() {
+  if (!props.canGoPrevious) return;
+
   if (displayMonth.value === 1) {
     displayMonth.value = 12
     displayYear.value--
@@ -119,6 +126,8 @@ function previousMonth() {
 }
 
 function nextMonth() {
+  if (!props.canGoNext) return;
+
   if (displayMonth.value === 12) {
     displayMonth.value = 1
     displayYear.value++
@@ -140,11 +149,13 @@ watch(() => props.month, (newMonth) => {
 <template>
   <GlobalCard class="calendar-widget">
     <div class="calendar-header">
-      <button class="nav-btn previous" @click="previousMonth" aria-label="Mois précédent">
+      <button class="nav-btn previous" @click="previousMonth" :disabled="!canGoPrevious"
+        :class="{ inactive: !canGoPrevious }" aria-label="Mois précédent">
         <SvgSideArrow :color="colors['brown']" />
       </button>
       <span class="current-month">{{ monthName }} {{ displayYear }}</span>
-      <button class="nav-btn next" @click="nextMonth" aria-label="Mois suivant">
+      <button class="nav-btn next" @click="nextMonth" :disabled="!canGoNext" :class="{ inactive: !canGoNext }"
+        aria-label="Mois suivant">
         <SvgSideArrow :color="colors['brown']" />
       </button>
     </div>
@@ -197,6 +208,13 @@ watch(() => props.month, (newMonth) => {
     color: $brown;
 
     flex-shrink: 0;
+
+    transition: opacity .5s ease-in-out;
+
+    &.inactive {
+      opacity: 0.4;
+      pointer-events: none;
+    }
 
     svg {
       height: .975rem;
