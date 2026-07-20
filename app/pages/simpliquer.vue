@@ -55,7 +55,6 @@ useSeoMeta({
 </script>
 <template>
   <div class="page-wrapper">
-    {{ simpliquer }}
     <GlobalSection id="simpliquer" :small-title="simpliquer?.titre">
       <h3 class="big-title staggered-title" v-html="spanifiedStaggerdSimpliquerTitle" />
       <GlobalVHtml id="simpliquer-texte" class="large-body-text" :html="simpliquer?.texte" />
