@@ -37,8 +37,8 @@ const cancelClickIfNoDestination = (e: PointerEvent) => {
 }
 </script>
 <template>
-    <template v-if="parsedLink == '#'">
-        <a @click.prevent="cancelClickIfNoDestination" :href="parsedLink" @pointerenter="playHoverAnimation" :class="[{ animate }, animation]">
+    <template v-if="typeof parsedLink == 'string' && parsedLink.startsWith('#')">
+        <a @click="cancelClickIfNoDestination" :href="parsedLink" @pointerenter="playHoverAnimation" :class="[{ animate }, animation]">
             <span class="icon" :style="{ backgroundColor: color ? color : colors.brown }">
                 <slot name="icon" />
             </span>

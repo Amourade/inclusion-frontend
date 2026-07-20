@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { onKeyStroke } from '@vueuse/core';
+
 const { getSingletonItem, getItems } = useDirectusItems();
 const { getThumbnail } = useDirectusFiles();
 
@@ -8,6 +10,24 @@ definePageMeta({
 
 const colors = useColors();
 const locale = useI18n();
+const route = useRoute();
+const router = useRouter();
+
+const showFormulaireMembre = computed(() => route.hash === '#formulaire-membre');
+
+const closeFormulaireMembre = () => {
+  router.replace({ hash: '' });
+};
+
+onKeyStroke('Escape', () => { if (showFormulaireMembre.value) closeFormulaireMembre() });
+
+watch(showFormulaireMembre, (open) => {
+  if (import.meta.client) document.body.style.overflow = open ? 'hidden' : '';
+}, { immediate: true });
+
+onUnmounted(() => {
+  document.body.style.overflow = '';
+});
 
 const {
   data: simpliquerData,
@@ -74,20 +94,26 @@ useSeoMeta({
         </div>
       </div>
     </GlobalSection>
-    <GlobalSection>
-      <iframe 
-          src="https://forms.office.com/pages/responsepage.aspx?id=ghxP9zL42kuDmp6tv0GxT7vIqStm1V9JupHgW4x2LjtUN0E5RkRRSlRHQjI1RDVETlcxQkdQU1VVWi4u&route=shorturl"
-          name="myiFrame"
-          width="100%"
-          height="auto"
-          scrolling="no"
-          marginwidth="0"
-          marginheight="0"
-          frameborder="1"
-          style="border:1px solid #000000; margin:0px 0px;"
-          allowfullscreen
-        ></iframe>
-    </GlobalSection>
+    <Teleport to="body">
+      <Transition name="fade">
+        <div v-if="showFormulaireMembre" class="formulaire-membre-overlay">
+          <GlobalLien lien="#" class="formulaire-membre-close no-text" @click.prevent="closeFormulaireMembre"
+            :aria-label="locale == 'fr' ? 'Fermer' : 'Close'" animation="plus">
+            <template #icon><SvgPlusSign /></template>
+          </GlobalLien>
+          <div class="formulaire-membre-iframe">
+            <iframe 
+            width="100%" 
+            height="100%"
+              :src="`https://forms.office.com/Pages/ResponsePage.aspx?id=${simpliquer?.id_formulaire_dinscription}`"
+              frameborder="0" 
+              style="border: none; max-width:100%;"
+              allowfullscreen>
+            </iframe>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
     <GlobalSection id="soutenu-par">
       <h3 class="small-body-text">{{ simpliquer?.soutenu_par_titre }}</h3>
       <div class="logos">
@@ -105,6 +131,58 @@ useSeoMeta({
   </div>
 </template>
 <style lang="scss" scoped>
+.formulaire-membre-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  padding-top: 3rem;
+
+  background: rgba($light-grey, 0.9);
+
+  @media screen and (max-width: $medium-breakpoint){
+    padding: .5rem;
+    padding-top: 3rem;
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+.formulaire-membre-iframe {
+  width: 100%;
+  height: 100%;
+  top: 1.5rem;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.formulaire-membre-close {
+  position: absolute;
+  z-index: 1001;
+  top: .5rem;
+  right: 1rem;
+
+  :deep(.icon svg) {
+    transform: rotate(45deg);
+  }
+
+  @media screen and (max-width: $medium-breakpoint){
+    top: .5rem;
+    right: .5rem;
+  }
+}
+
 #soutenu-par{
   text-align: center;
   color: $brown;
