@@ -74,6 +74,20 @@ useSeoMeta({
         </div>
       </div>
     </GlobalSection>
+    <GlobalSection>
+      <iframe 
+          src="https://forms.office.com/pages/responsepage.aspx?id=ghxP9zL42kuDmp6tv0GxT7vIqStm1V9JupHgW4x2LjtUN0E5RkRRSlRHQjI1RDVETlcxQkdQU1VVWi4u&route=shorturl"
+          name="myiFrame"
+          width="100%"
+          height="auto"
+          scrolling="no"
+          marginwidth="0"
+          marginheight="0"
+          frameborder="1"
+          style="border:1px solid #000000; margin:0px 0px;"
+          allowfullscreen
+        ></iframe>
+    </GlobalSection>
     <GlobalSection id="soutenu-par">
       <h3 class="small-body-text">{{ simpliquer?.soutenu_par_titre }}</h3>
       <div class="logos">
