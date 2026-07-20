@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 const { getSingletonItem, getItems } = useDirectusItems();
+const { getThumbnail } = useDirectusFiles();
 
 definePageMeta({
   name: 'Simpliquer',
@@ -17,7 +18,7 @@ const {
   getSingletonItem<Simpliquer>({
     collection: "simpliquer",
     params: {
-        fields: ["*", "translations.*"]
+        fields: ["*", "translations.*", "soutenu_par_logos.directus_files_id.*"]
     }
   })
 );
@@ -54,6 +55,7 @@ useSeoMeta({
 </script>
 <template>
   <div class="page-wrapper">
+    {{ simpliquer }}
     <GlobalSection id="simpliquer" :small-title="simpliquer?.titre">
       <h3 class="big-title staggered-title" v-html="spanifiedStaggerdSimpliquerTitle" />
       <GlobalVHtml id="simpliquer-texte" class="large-body-text" :html="simpliquer?.texte" />
@@ -73,14 +75,55 @@ useSeoMeta({
         </div>
       </div>
     </GlobalSection>
+    <GlobalSection id="soutenu-par">
+      <h3 class="small-body-text">{{ simpliquer?.soutenu_par_titre }}</h3>
+      <div class="logos">
+        <div class="logo-wrapper" v-for="logo in simpliquer?.soutenu_par_logos">
+          <GlobalImage :cover="false" :image="getThumbnail(logo.directus_files_id.id, {
+              width: 200,
+              height: 200,
+              fit: 'inside',
+              format: 'webp',
+              quality: 90
+          })" :title="logo.directus_files_id.title" />
+        </div>
+      </div>
+    </GlobalSection>
   </div>
 </template>
 <style lang="scss" scoped>
+#soutenu-par{
+  text-align: center;
+  color: $brown;
+  background: transparent;
+  padding-top: 3rem;
+  padding-bottom: 4rem;
+
+  h3{
+    margin-bottom: 4rem;
+  }
+
+  .logos{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 3.375rem;
+    justify-content: center;
+  }
+
+  .logo-wrapper{
+    width: 150px; 
+    height: 50px;
+    position: relative;
+  }
+}
 #simpliquer {
   flex-grow: 1;
 
   background: $blue;
   color: $brown;
+
+  padding-bottom: 3rem;
 
   .staggered-title {
     left: 50%;

@@ -42,7 +42,7 @@ const titlePositionStyle = computed(()=>{
                 <SvgAccueilHero />
             </div>
         </Transition>
-        <img @mouseleave="imageHover = false" :class="{ready: isReady}" :src="image" :alt="title ? title : 'Projet Inclusion'" loading="lazy" />
+        <img @mouseleave="imageHover = false" :class="{ready: isReady}" :src="image" :title="title ? title : 'Projet Inclusion'" :alt="title ? title : 'Projet Inclusion'" loading="lazy" />
     </div>
 </template>
 <style lang="scss" scoped>

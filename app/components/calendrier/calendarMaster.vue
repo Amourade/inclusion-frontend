@@ -91,7 +91,7 @@ const monthNames = {
   ]
 }
 
-const monthName = computed(() => monthNames[locale.value][displayMonth.value - 1])
+const monthName = computed(() => monthNames[locale.value as keyof typeof monthNames][displayMonth.value - 1])
 
 const {
   data: calendrierData,
@@ -147,7 +147,7 @@ const fileteredEvenements = computed(() => {
     return matchesCategory || matchesInscription;
   }) || [];
 })
-const eventsRefs = useTemplateRefsList()
+const eventsRefs = useTemplateRefsList<{ highlight: (ids: number[]) => void }>()
 
 const {
   data: categoriesData,
@@ -299,7 +299,7 @@ const highlightEvents = (ids: number[]) => {
   clearTimeout(highLightTimeout)
 
   let earliestEventTime: number;
-  let earliestEvent: number
+  let earliestEvent: number = -1
 
   ids.forEach((id) => {
     const event = fileteredEvenements.value.find((e) => e.id == id);
@@ -316,7 +316,7 @@ const highlightEvents = (ids: number[]) => {
     }
   })
 
-  if (earliestEvent) {
+  if (earliestEvent !== -1) {
     const eventElement = document.getElementById(earliestEvent.toString());
     eventElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 

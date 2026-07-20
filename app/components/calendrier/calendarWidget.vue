@@ -25,12 +25,12 @@ const emit = defineEmits<{
 const displayYear = ref(props.year)
 const displayMonth = ref(props.month)
 
-const daysOfWeek = {
+const daysOfWeek: {[key: string]: string[]} = {
   fr: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
   en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 }
 
-const monthNames = {
+const monthNames: {[key: string]: string[]} = {
   fr: [
     'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
     'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
@@ -41,7 +41,7 @@ const monthNames = {
   ]
 }
 
-const monthName = computed(() => monthNames[locale.value][displayMonth.value - 1])
+const monthName = computed(() => monthNames[locale.value]![displayMonth.value - 1])
 
 interface CalendarDay {
   date: number
