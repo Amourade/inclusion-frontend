@@ -125,6 +125,7 @@ interface Simpliquer {
   facons_de_simpliquer_titre: string;
   soutenu_par_titre: string;
   soutenu_par_logos: any[];
+  id_formulaire_dinscription: string;
   translations?: Simpliquer[];
 }
 

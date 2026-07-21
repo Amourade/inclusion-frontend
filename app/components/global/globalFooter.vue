@@ -8,6 +8,83 @@ const breakPointsValues = useBreakpointsValues()
 const breakpoints = useBreakpoints(breakPointsValues.value);
 
 const activeBreakpoint = breakpoints.active();
+const newsletterResult = ref('');
+
+let jsonpCounter = 0;
+
+function jsonpSubmit(form: HTMLFormElement): Promise<any> {
+    return new Promise((resolve, reject) => {
+        const callbackName = `mailchimpCallback_${++jsonpCounter}`;
+
+        // Build the JSONP URL: /post -> /post-json, carry the form fields, add the callback param.
+        const url = new URL(form.action);
+        url.pathname = url.pathname.replace(/\/post$/, '/post-json');
+        new FormData(form).forEach((value, key) => {
+            url.searchParams.set(key, value as string);
+        });
+        url.searchParams.set('c', callbackName);
+
+        const script = document.createElement('script');
+
+        let settled = false;
+        const cleanup = () => {
+            delete (window as any)[callbackName];
+            script.remove();
+        };
+
+        // Guard against a loaded-but-unparseable response: onerror does NOT fire when a
+        // script loads with HTTP 200 but contains invalid JS, so the callback would never
+        // run and this Promise would hang. Time it out instead.
+        const timeout = setTimeout(() => {
+            if (settled) return;
+            settled = true;
+            cleanup();
+            reject(new Error('JSONP request timed out'));
+        }, 10000);
+
+        (window as any)[callbackName] = (data: unknown) => {
+            if (settled) return;
+            settled = true;
+            clearTimeout(timeout);
+            cleanup();
+            resolve(data);
+        };
+
+        script.onerror = () => {
+            if (settled) return;
+            settled = true;
+            clearTimeout(timeout);
+            cleanup();
+            reject(new Error('JSONP request failed'));
+        };
+
+        // Assign src last, once the callback is registered, then insert to start the load.
+        script.src = url.toString();
+        document.body.appendChild(script);
+    });
+}
+
+let resultTimeout: number;
+
+async function onNewsletterSubmit(event: Event) {
+    const form = event.target as HTMLFormElement;
+    
+    try {
+        const data = await jsonpSubmit(form);
+        
+        newsletterResult.value = data.result;
+    } catch (error) {
+        newsletterResult.value = 'error';
+
+        console.error(error);
+    }
+
+    clearTimeout(resultTimeout)
+
+    resultTimeout = setTimeout(()=>{
+        newsletterResult.value = ''
+    }, 5000)
+}
 
 const {
     data: footerData,
@@ -63,14 +140,24 @@ const footerGroupeLiens = useTranslatedItems(footerGroupeLienData, locale);
                     </nav>
                     <div class="newsletter">
                         <h2>{{ footer?.infolettre_titre }}</h2>
-                        <form>
+                        <form action="https://pceim.us6.list-manage.com/subscribe/post?u=6b60032306b69e686d263b94e&id=58ee0f5891&f_id=003517e2f0" method="post" @submit.prevent="onNewsletterSubmit">
                             <label for="newsletter-email">{{ footer?.infolettre_texte }}</label>
                             <div>
-                                <input id="newsletter-email" type="email" :placeholder="footer?.infolettre_courriel_placeholder" required />
+                                <input id="newsletter-email" name="EMAIL" type="email" autocomplete="on" :placeholder="footer?.infolettre_courriel_placeholder" required />
+                                <input type="text" name="b_6b60032306b69e686d263b94e_58ee0f5891" tabindex="-1" value="" style="position:absolute;left:-5000px;">
                                 <GlobalRoundButton>
                                     <button class="round-content-button" type="submit"><span>{{ footer?.infolettre_envoyer }}</span> <SvgShortDiagArrow :color="colors.brown" /></button>
                                 </GlobalRoundButton>
                             </div>
+                            <Transition name="fade">
+                                <p v-if="newsletterResult">
+                                    {{ 
+                                        newsletterResult == 'error' ? 
+                                        locale == 'en' ? 'There was an error, try again later' : 'Il y a eu une erreur, réessayez plus tard' :
+                                        locale == 'en' ? 'Successfully subscribed to the newsletter' : 'Inscription à l\'infolettre réussi' 
+                                    }}
+                                </p>
+                            </Transition>
                         </form>
                     </div>
                 </div>
@@ -227,6 +314,26 @@ footer {
 
         &::-ms-input-placeholder { /* Edge 12 -18 */
             color: $white;
+        }
+        
+        &:autofill,
+            input:-webkit-autofill,
+            input:-webkit-autofill:hover,
+            input:-webkit-autofill:focus,
+            input:-webkit-autofill:active {
+            /* Paint over the yellow with a 1000px inset shadow in your brown */
+            -webkit-box-shadow: 0 0 0 1000px $brown inset !important;
+            box-shadow: 0 0 0 1000px $brown inset !important;
+
+            /* White text (color is ignored on autofill; this isn't) */
+            -webkit-text-fill-color: #ffffff !important;
+
+            /* Keep the caret visible against the brown */
+            caret-color: #ffffff;
+
+            /* Match the input's own typography */
+            font-family: Montserrat, sans-serif!important;
+            font-size: 1rem !important;
         }
     }
 }

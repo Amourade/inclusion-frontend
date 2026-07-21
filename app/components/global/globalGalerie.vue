@@ -158,14 +158,4 @@ Styles for the global lists are in main.scss
         right: .5rem;
     }
 }
-
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
 </style>
