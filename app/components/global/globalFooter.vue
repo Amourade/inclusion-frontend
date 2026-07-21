@@ -171,7 +171,7 @@ const footerGroupeLiens = useTranslatedItems(footerGroupeLienData, locale);
                     <FooterLink :link="footer?.politique_confidentialite_lien">{{ footer?.politique_confidentialie_libelle }}</FooterLink>
                 </p>
                 <p>
-                    <FooterLink :link="footer?.politique_confidentialite_lien">{{ footer?.conditions_generales_libelle }}</FooterLink>
+                    <FooterLink :link="footer?.conditions_generales_lien">{{ footer?.conditions_generales_libelle }}</FooterLink>
                 </p>
                 <div class="realise-par" v-if="footer?.realise_par" v-html="footer.realise_par" />
             </section>
